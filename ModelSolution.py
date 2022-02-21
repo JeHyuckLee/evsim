@@ -5,6 +5,7 @@ from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
 import datetime
+import sys
 
 
 class Cell(BehaviorModelExecutor):
@@ -92,6 +93,9 @@ class str_to_instruction():
     def MoveD(self):
         self.list_of_instruction.append('D')
 
+    def get_instruction(self):
+        return self.list_of_instruction
+
 
 # System Simulator Initialization
 se = SystemSimulator()
@@ -134,6 +138,9 @@ for i in range(height):
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
+s = str_to_instruction()
+exec("for i in range(4):s.MoveF()")
+
 se.get_engine("sname").insert_external_event(
-    "start", ["R", "L", "F", "D", "R", "F"])
+    "start", s.get_instruction())
 se.get_engine("sname").simulate()
