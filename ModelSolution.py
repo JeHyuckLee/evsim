@@ -134,12 +134,33 @@ for i in range(height):
 
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
+class str_to_instruction():
+    def __init__(self):
+        self.list_of_instruction = list()
+
+    def MoveR(self):
+        self.list_of_instruction.append('R')
+
+    def MoveL(self):
+        self.list_of_instruction.append('L')
+
+    def MoveF(self):
+        self.list_of_instruction.append('F')
+
+    def MoveD(self):
+        self.list_of_instruction.append('D')
+
+    def get_instruction(self):
+        return self.list_of_instruction
+
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
 s = str_to_instruction()
-exec("for i in range(4):s.MoveF()")
+print("명령어 입력 :")
+str = input()
+exec(str)
 
 se.get_engine("sname").insert_external_event(
     "start", s.get_instruction())
