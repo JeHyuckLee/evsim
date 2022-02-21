@@ -75,23 +75,6 @@ class Cell(BehaviorModelExecutor):
             self._cur_state = "MOVE"
 
 
-class str_to_instruction():
-    def __init__(self):
-        self.list_of_instruction = list()
-
-    def MoveR(self):
-        self.list_of_instruction.append('R')
-
-    def MoveL(self):
-        self.list_of_instruction.append('L')
-
-    def MoveF(self):
-        self.list_of_instruction.append('F')
-
-    def MoveD(self):
-        self.list_of_instruction.append('D')
-
-
 # System Simulator Initialization
 se = SystemSimulator()
 
