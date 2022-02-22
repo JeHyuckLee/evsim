@@ -1,6 +1,8 @@
 from cmath import sqrt
 from dis import Instruction
+from doctest import FAIL_FAST
 from re import T
+
 from system_simulator import SystemSimulator
 from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
@@ -21,7 +23,8 @@ class Cell(BehaviorModelExecutor):
         self.insert_state("IDLE", Infinite)
         self.insert_state("MOVE", 1)
 
-        self.set_blocked(is_blocked)
+        self.set_blocked(is_blocked)  # True = 장애물 , 장애물 인지 아닌지 set
+        # def set_blocked 는 definition.py 에 있음
 
         self.insert_input_port("east")
         self.insert_input_port("west")
@@ -47,21 +50,14 @@ class Cell(BehaviorModelExecutor):
     def output(self):
         self.cm = self.cm_list.pop(0)
 
-        # if (self.get_blocked() == True):
-        #     msg = SysMessage(self.get_name(),self.get_name)
-        #     msg.insert(self.cm_list)
-        #     print(f"[Sta][OUT]: {datetime.datetime.now()}")
-        #     print("The next block is blocked.")
-        #     print(f"Current Location:{self.get_name()}")
-        #     return msg
-
         if self.cm == "R":
             msg = SysMessage(self.get_name(), "east")
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
             #print("Next location: (1,0)")
-            if (self.get_blocked() == True):
-                msg = SysMessage(self.get_name(), "west")
-                print("The current cell is blocked.")
+            if (self.get_blocked() == True):  # 만약 장애물이라면
+                # get_blocked() 는 definition.py 에 있음
+                msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
+                print("***The current cell is blocked.***")
 
             msg.insert(self.cm_list)
             print(f"Current Location:{self.get_name()}")
@@ -74,11 +70,10 @@ class Cell(BehaviorModelExecutor):
             #print("Next location: (1,0)")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
-                print("The current cell is blocked.")
+                print("***The current cell is blocked.***")
 
             msg.insert(self.cm_list)
             print(f"Current Location:{self.get_name()}")
-
             return msg
 
         elif self.cm == "L":
@@ -88,7 +83,7 @@ class Cell(BehaviorModelExecutor):
             #print("Next location: (1,0)")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "east")
-                print("The current cell is blocked.")
+                print("***The current cell is blocked.***")
 
             msg.insert(self.cm_list)
             print(f"Current Location:{self.get_name()}")
@@ -100,7 +95,7 @@ class Cell(BehaviorModelExecutor):
             #print("Next location: (1,0)")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
-                print("The current cell is blocked.")
+                print("***The current cell is blocked.***")
 
             msg.insert(self.cm_list)
             print(f"Current Location:{self.get_name()}")
@@ -152,7 +147,7 @@ for i in range(height):
             c = Cell(0, Infinite, "", "sname", i, j, False)
         else:
             c = Cell(0, Infinite, "", "sname", i, j,
-                     random.choice([True, False]))
+                     random.choice([True, False, False, False]))  # 랜덤으로 장애물 생성  True = 장애물
         se.get_engine("sname").register_entity(c)
         col.append(c)
     mat.append(col)
@@ -172,11 +167,12 @@ for i in range(height):
             se.get_engine("sname").coupling_relation(mat[i][j], "east",
                                                      mat[i][j + 1], "west")
 
-
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
-class str_to_instruction():
 
+
+class str_to_instruction():  # 문자열을 명령어로
+    # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
     def __init__(self):
         self.list_of_instruction = list()
 
@@ -192,7 +188,7 @@ class str_to_instruction():
     def MoveD(self):
         self.list_of_instruction.append('D')
 
-    def get_instruction(self):
+    def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.list_of_instruction
 
 
@@ -202,7 +198,8 @@ se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 s = str_to_instruction()
 print("명령어 입력 :")
 str = input()
-exec(str)
+exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
-se.get_engine("sname").insert_external_event("start", s.get_instruction())
+se.get_engine("sname").insert_external_event(
+    "start", s.get_instruction())  # 만들어진 명령어 리스트를 insert
 se.get_engine("sname").simulate()
