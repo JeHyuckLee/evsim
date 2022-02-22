@@ -60,7 +60,7 @@ class Cell(BehaviorModelExecutor):
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
             #print("Next location: (1,0)")
             if (self.get_blocked() == True):
-                msg = SysMessage(self.get_name(), "south")
+                msg = SysMessage(self.get_name(), "west")
                 print("The current cell is blocked.")
 
             msg.insert(self.cm_list)
@@ -87,7 +87,7 @@ class Cell(BehaviorModelExecutor):
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
             #print("Next location: (1,0)")
             if (self.get_blocked() == True):
-                msg = SysMessage(self.get_name(), "south")
+                msg = SysMessage(self.get_name(), "east")
                 print("The current cell is blocked.")
 
             msg.insert(self.cm_list)
@@ -99,7 +99,7 @@ class Cell(BehaviorModelExecutor):
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
             #print("Next location: (1,0)")
             if (self.get_blocked() == True):
-                msg = SysMessage(self.get_name(), "south")
+                msg = SysMessage(self.get_name(), "north")
                 print("The current cell is blocked.")
 
             msg.insert(self.cm_list)
@@ -148,7 +148,11 @@ mat = list()
 for i in range(height):
     col = list()
     for j in range(width):
-        c = Cell(0, Infinite, "", "sname", i, j, random.choice([True, False]))
+        if i == 0 and j == 0:
+            c = Cell(0, Infinite, "", "sname", i, j, False)
+        else:
+            c = Cell(0, Infinite, "", "sname", i, j,
+                     random.choice([True, False]))
         se.get_engine("sname").register_entity(c)
         col.append(c)
     mat.append(col)
