@@ -49,7 +49,7 @@ class CoreModel(object):
     def __init__(self, _name, _type):
         # Model Type
         self._type = _type
-
+        self.blocked = False
         self._name = _name
         # Input Ports Declaration
         self._input_ports = []
