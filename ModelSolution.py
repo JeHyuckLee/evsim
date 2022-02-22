@@ -38,7 +38,7 @@ class Cell(BehaviorModelExecutor):
 
     def ext_trans(self, port, msg):
         # if port == "east":
-        print(f"[IN]: {datetime.datetime.now()}")
+        print(f"\n[IN]: {datetime.datetime.now()}")
         self.cancel_rescheduling()
         data = msg.retrieve()
         print(data)
@@ -50,33 +50,38 @@ class Cell(BehaviorModelExecutor):
         self.cm = self.cm_list.pop(0)
 
         if self.cm == "R":
-            print(f"\nCurrent Location:{self.get_name()}") # 이동전 현재 위치 출력
-            msg = SysMessage(self.get_name(), "east") # Right니까 east(동쪽) 이동하도록
+            print(f"Current Location:{self.get_name()}") # 이동전 현재 위치 출력
+
+            msg = SysMessage(self.get_name(), "east") # Right -> east(동쪽) 이동
             print(f"[OUT]: {datetime.datetime.now()}") # 현재 시간 출력
 
             # 만약 가려는 방향이 장애물이라면,
             if (self.get_blocked() == True): # get_blocked() 는 definition.py에 있음
 
-                print("***The current cell is blocked.***") # 장애물 마주쳤다는 메세지 출력
-                msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
+                print("***The current cell is blocked.***") # blcok 메세지 출력
+                msg = SysMessage(self.get_name(), "west")  # 이전 위치로 다시 돌아간다.
 
-                next = input("Go back to prev-location. Input new Command : ") # 직전 위치로 돌아왔음을 알려주고, 새로운 방향 입력
+                next = input("Go back to prev-location. Input new Command : ") # 이전 위치로 돌아왔음을 알려주고, 새로운 방향 입력
                 
                 # 명령어 리스트의 맨 앞에 위에서 입력 받은 새로운 방향 명령 추가
                 if next == "F" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
                 elif next == "L" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
                 elif next == "B" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
 
             msg.insert(self.cm_list)
             return msg
 
         elif self.cm == "F":
-            print(f"\nCurrent Location:{self.get_name()}")
-            
+            print(f"Current Location:{self.get_name()}") # 현재 위치 출력
+
+            msg = SysMessage(self.get_name(), "north") # Forward -> north(북쪽) 이동
+            print(f"[OUT]: {datetime.datetime.now()}") # 현재 시간 출력
+
             if (self.get_blocked() == True):
+
                 print("***The current cell is blocked.***")
                 msg = SysMessage(self.get_name(), "south")
 
@@ -86,7 +91,7 @@ class Cell(BehaviorModelExecutor):
                 elif next == "R" :
                     self.cm_list.insert(0, next)
                 elif next == "B" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
 
             msg = SysMessage(self.get_name(), "north")
 
@@ -96,43 +101,43 @@ class Cell(BehaviorModelExecutor):
             return msg
 
         elif self.cm == "L":
-            print(f"\nCurrent Location:{self.get_name()}")
-            msg = SysMessage(self.get_name(), "west")
+            print(f"Current Location:{self.get_name()}")
 
+            msg = SysMessage(self.get_name(), "west") # Light -> west(서쪽)
             print(f"[OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
+            
             if (self.get_blocked() == True):
                 print("***The current cell is blocked.***")
                 msg = SysMessage(self.get_name(), "east")
 
                 next = input("Go back to prev-location. Input new Command : ")
                 if next == "F" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
                 elif next == "R" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
                 elif next == "B" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
 
             msg.insert(self.cm_list)
             return msg
 
         elif self.cm == "B":
-            print(f"\nCurrent Location:{self.get_name()}")
-            msg = SysMessage(self.get_name(), "south")
+            print(f"Current Location:{self.get_name()}")
+
+            msg = SysMessage(self.get_name(), "south") # Back -> south(남쪽)
             print(f"[OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
+
             if (self.get_blocked() == True):
                 print("***The current cell is blocked.***")
                 msg = SysMessage(self.get_name(), "north")
 
                 next = input("Go back to prev-location. Input new Command : ")
                 if next == "F" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
                 elif next == "R" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
                 elif next == "L" :
-                    s.get_instruction().insert(0, next)
-
+                    self.cm_list.insert(0, next)
 
             msg.insert(self.cm_list)
             return msg
@@ -175,9 +180,9 @@ width = 100
 height = 100
 
 mat = list()
-for i in range(height):
+for i in range(width):
     col = list()
-    for j in range(width):
+    for j in range(height):
         if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", i, j, False)
         else:
@@ -186,19 +191,19 @@ for i in range(height):
         col.append(c)
     mat.append(col)
 
-for i in range(height):
-    for j in range(width):
+for i in range(width):
+    for j in range(height):
         if i != 0:
-            se.get_engine("sname").coupling_relation(mat[i][j], "south",
-                                                     mat[i - 1][j], "north")
-        if i != height - 1:
-            se.get_engine("sname").coupling_relation(mat[i][j], "north",
-                                                     mat[i + 1][j], "south")
-        if j != 0:
             se.get_engine("sname").coupling_relation(mat[i][j], "west",
-                                                     mat[i][j - 1], "east")
-        if j != width - 1:
+                                                     mat[i - 1][j], "east")
+        if i != width - 1:
             se.get_engine("sname").coupling_relation(mat[i][j], "east",
+                                                     mat[i + 1][j], "west")
+        if j != 0:
+            se.get_engine("sname").coupling_relation(mat[i][j], "south",
+                                                     mat[i][j - 1], "north")
+        if j != height - 1:
+            se.get_engine("sname").coupling_relation(mat[i][j], "north",
                                                      mat[i][j + 1], "west")
 
 #msg = SysMessage("cell", "")
