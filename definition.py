@@ -62,11 +62,11 @@ class CoreModel(object):
     def get_name(self):
         return self._name
     
-    def set_blocked(self, _blocked):
-        self._blocked = _blocked
+    def set_blocked(self, blocked):
+        self.blocked = blocked
 
     def get_blocked(self):
-        return self._blocked
+        return self.blocked
 
     def insert_input_port(self, port):
         self._input_ports.append(port)
