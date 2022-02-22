@@ -108,8 +108,8 @@ class Cell(BehaviorModelExecutor):
             self._cur_state = "MOVE"
 
 
-class str_to_instruction():
-
+class str_to_instruction():  # 문자열을 명령어로
+    # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
     def __init__(self):
         self.list_of_instruction = list()
 
@@ -125,7 +125,7 @@ class str_to_instruction():
     def MoveD(self):
         self.list_of_instruction.append('D')
 
-    def get_instruction(self):
+    def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.list_of_instruction
 
 
@@ -143,7 +143,7 @@ mat = list()
 for i in range(height):
     col = list()
     for j in range(width):
-        if i == 0 and j == 0:
+        if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", i, j, False)
         else:
             c = Cell(0, Infinite, "", "sname", i, j,
@@ -169,27 +169,6 @@ for i in range(height):
 
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
-
-
-class str_to_instruction():  # 문자열을 명령어로
-    # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
-    def __init__(self):
-        self.list_of_instruction = list()
-
-    def MoveR(self):
-        self.list_of_instruction.append('R')
-
-    def MoveL(self):
-        self.list_of_instruction.append('L')
-
-    def MoveF(self):
-        self.list_of_instruction.append('F')
-
-    def MoveD(self):
-        self.list_of_instruction.append('D')
-
-    def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
-        return self.list_of_instruction
 
 
 se.get_engine("sname").insert_input_port("start")
