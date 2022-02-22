@@ -1,7 +1,8 @@
 from enum import Enum
 
 # TODO-01 Define Error Type or Exception cbchoi
-Infinite = float("inf") # hug value
+Infinite = float("inf")  # hug value
+
 
 class AttributeType(Enum):
     # BEHAVIOR = 0
@@ -34,22 +35,25 @@ class AttributeType(Enum):
 
 # 2019.05.16 added by cbchoi
 class SimulationMode(Enum):
-    SIMULATION_IDLE = 0         # Simulation Engine is instantiated but simulation is not running
-    SIMULATION_RUNNING = 1      # Simulation Engine is instantiated, simulation is running
-    SIMULATION_TERMINATED = 2   # Simulation Engine is instantiated but simulation is terminated
-    SIMULATION_PAUSE = 3        # Simulation Engine is instantiated, simulation paused
-    SIMULATION_UNKNOWN = -1     # Simulation Engine went to abnormal state
+    SIMULATION_IDLE = 0  # Simulation Engine is instantiated but simulation is not running
+    SIMULATION_RUNNING = 1  # Simulation Engine is instantiated, simulation is running
+    SIMULATION_TERMINATED = 2  # Simulation Engine is instantiated but simulation is terminated
+    SIMULATION_PAUSE = 3  # Simulation Engine is instantiated, simulation paused
+    SIMULATION_UNKNOWN = -1  # Simulation Engine went to abnormal state
+
 
 # 2020.01.20 added by cbchoi
 class ModelType(Enum):
-    BEHAVIORAL    = 0
-    STRUCTURAL  = 1
+    BEHAVIORAL = 0
+    STRUCTURAL = 1
+
 
 class CoreModel(object):
+
     def __init__(self, _name, _type):
         # Model Type
         self._type = _type
-
+        self.blocked = False
         self._name = _name
         # Input Ports Declaration
         self._input_ports = []
@@ -58,6 +62,12 @@ class CoreModel(object):
 
     def set_name(self, _name):
         self._name = _name
+
+    def set_blocked(self, blocked):
+        self.blocked = blocked
+
+    def get_blocked(self):
+        return self.blocked
 
     def get_name(self):
         return self._name
@@ -79,10 +89,13 @@ class CoreModel(object):
     def get_type(self):
         return self._type
 
+
 class SingletonType(object):
+
     def __call__(self, cls, *args, **kwargs):
         try:
             return cls.__instance
         except AttributeError:
-            cls.__instance = super(SingletonType, cls).__call__(*args, **kwargs)
+            cls.__instance = super(SingletonType,
+                                   cls).__call__(*args, **kwargs)
             return cls.__instance
