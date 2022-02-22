@@ -60,7 +60,7 @@ class Cell(BehaviorModelExecutor):
             print(f"Current Location:{self.get_name()}")
             return msg
 
-        elif self.cm == "D":
+        elif self.cm == "B":
             msg = SysMessage(self.get_name(), "south")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
@@ -111,11 +111,11 @@ for i in range(height):
 
 
 #msg = SysMessage("cell", "")
-#msg.insert(["R", "L", "F", "D", "R", "F"])
+#msg.insert(["R", "L", "F", "B", "R", "F"])
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
 se.get_engine("sname").insert_external_event(
-    "start", ["R", "L", "F", "D", "R", "F"])
+    "start", ["R", "L", "F", "B", "R", "F"])
 se.get_engine("sname").simulate()
