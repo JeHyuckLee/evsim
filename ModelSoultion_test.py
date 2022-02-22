@@ -52,7 +52,6 @@ class Cell(BehaviorModelExecutor):
 
     def output(self):
         self.cm = self.cm_list.pop(0)
-
         if self.cm == "R":
             msg = SysMessage(self.get_name(), "east")
             print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
@@ -61,9 +60,7 @@ class Cell(BehaviorModelExecutor):
                 # get_blocked() 는 definition.py 에 있음
                 msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
                 print("***The current cell is blocked.***")
-
-            msg.insert(self.cm_list)
-            return msg
+                self.cm_list.insert(0, self.cm)
 
         elif self.cm == "F":
             msg = SysMessage(self.get_name(), "north")
@@ -73,9 +70,7 @@ class Cell(BehaviorModelExecutor):
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
                 print("***The current cell is blocked.***")
-
-            msg.insert(self.cm_list)
-            return msg
+                self.cm_list.insert(0, self.cm)
 
         elif self.cm == "L":
             msg = SysMessage(self.get_name(), "west")
@@ -85,9 +80,7 @@ class Cell(BehaviorModelExecutor):
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "east")
                 print("***The current cell is blocked.***")
-
-            msg.insert(self.cm_list)
-            return msg
+                self.cm_list.insert(0, self.cm)
 
         elif self.cm == "D":
             msg = SysMessage(self.get_name(), "south")
@@ -96,9 +89,10 @@ class Cell(BehaviorModelExecutor):
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
                 print("***The current cell is blocked.***")
+                self.cm_list.insert(0, self.cm)
 
-            msg.insert(self.cm_list)
-            return msg
+        msg.insert(self.cm_list)
+        return msg    
 
     def int_trans(self):
         if self._cur_state == "MOVE":
