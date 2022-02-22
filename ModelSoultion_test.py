@@ -52,10 +52,10 @@ class Cell(BehaviorModelExecutor):
 
     def output(self):
         self.cm = self.cm_list.pop(0)
+        print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
+
         if self.cm == "R":
             msg = SysMessage(self.get_name(), "east")
-            print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             if (self.get_blocked() == True):  # 만약 장애물이라면
                 # get_blocked() 는 definition.py 에 있음
                 msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
@@ -64,9 +64,6 @@ class Cell(BehaviorModelExecutor):
 
         elif self.cm == "F":
             msg = SysMessage(self.get_name(), "north")
-
-            print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
                 print("***The current cell is blocked.***")
@@ -74,9 +71,6 @@ class Cell(BehaviorModelExecutor):
 
         elif self.cm == "L":
             msg = SysMessage(self.get_name(), "west")
-
-            print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "east")
                 print("***The current cell is blocked.***")
@@ -84,16 +78,14 @@ class Cell(BehaviorModelExecutor):
 
         elif self.cm == "D":
             msg = SysMessage(self.get_name(), "south")
-            print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             if (self.get_blocked() == True):
-                msg = SysMessage(self.get_name(), "north")
+                msg = SysMessage(self.get_name(), "north")  
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
         msg.insert(self.cm_list)
-        return msg    
-
+        return msg
+    
     def int_trans(self):
         if self._cur_state == "MOVE":
             self._cur_state = "IDLE"
