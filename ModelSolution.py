@@ -45,15 +45,17 @@ class Cell(BehaviorModelExecutor):
             #print("Next location: (1,0)")
             print(f"Current Location:{self.get_name()}")
             return msg
-        elif self.cm == "F":
-            msg = SysMessage(self.get_name(), "north")
+        
+        elif self.cm == "L":
+            msg = SysMessage(self.get_name(), "west")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
             #print("Next location: (1,0)")
-            print(f"Current Location:{self.get_name()}")
+            print(f"Current Location:{self.get_name()}")      
             return msg
-        elif self.cm == "L":
-            msg = SysMessage(self.get_name(), "west")
+        
+        elif self.cm == "F":
+            msg = SysMessage(self.get_name(), "north")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
             #print("Next location: (1,0)")
