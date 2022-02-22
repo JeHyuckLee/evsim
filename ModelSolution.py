@@ -24,10 +24,8 @@ class Cell(BehaviorModelExecutor):
         self.insert_output_port("west")
         self.insert_output_port("north")
         self.insert_output_port("south")
-        #self.cm_list = []
 
     def ext_trans(self, port, msg):
-        # if port == "east":
         print(f"[IN]: {datetime.datetime.now()}")
         self.cancel_rescheduling()
         data = msg.retrieve()
@@ -42,29 +40,24 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "east")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             print(f"Current Location:{self.get_name()}")
             return msg
         elif self.cm == "F":
             msg = SysMessage(self.get_name(), "north")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             print(f"Current Location:{self.get_name()}")
             return msg
         elif self.cm == "L":
             msg = SysMessage(self.get_name(), "west")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             print(f"Current Location:{self.get_name()}")
             return msg
-
-        elif self.cm == "D":
+        elif self.cm == "B":
             msg = SysMessage(self.get_name(), "south")
             msg.insert(self.cm_list)
             print(f"[Sta][OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
             print(f"Current Location:{self.get_name()}")
             return msg
 
@@ -111,11 +104,11 @@ for i in range(height):
 
 
 #msg = SysMessage("cell", "")
-#msg.insert(["R", "L", "F", "D", "R", "F"])
+#msg.insert(["R", "L", "F", "B", "R", "F"])
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
 se.get_engine("sname").insert_external_event(
-    "start", ["R", "L", "F", "D", "R", "F"])
+    "start", ["R", "L", "F", "B", "R", "F"])
 se.get_engine("sname").simulate()
