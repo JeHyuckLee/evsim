@@ -104,7 +104,7 @@ class Cell(BehaviorModelExecutor):
 class str_to_instruction():  # 문자열을 명령어로
     # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
     def __init__(self):
-        self.list_of_instruction = list()
+        self.cm_list = list()
 
     def MoveR(self):
         self.cm_list.append('R')
@@ -119,7 +119,7 @@ class str_to_instruction():  # 문자열을 명령어로
         self.cm_list.append('D')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
-        return self.list_of_instruction
+        return self.cm_list
 
 class Agent(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name):
@@ -202,7 +202,7 @@ str = input()
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
 A = Agent(0, Infinite, "hi", "sname")
-A.list_of_instruction(str)
+A.list_of_instruction(s.get_instruction())
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
