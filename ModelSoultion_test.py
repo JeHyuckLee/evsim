@@ -45,7 +45,15 @@ class Cell(BehaviorModelExecutor):
         print(f"[{self.ix}, {self.iy}][IN]: {datetime.datetime.now()}")
         self.cancel_rescheduling()
         data = msg.retrieve()
-        self.cm_list = data[0]
+
+        self.agent = data[0]
+
+        se.get_engine("sname").register_entity(self.agent)
+        se.get_engine("sname").insert_input_port("start")
+        se.get_engine("sname").coupling_relation(None, "start", self.agent, "start")
+
+        self.cm_list = self.agent.cm_list
+
         print(f"Current Location:{self.get_name()}")
         print(self.cm_list)
         self._cur_state = "MOVE"
@@ -83,7 +91,7 @@ class Cell(BehaviorModelExecutor):
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
-        msg.insert(self.cm_list)
+        msg.insert(self.agent)
         return msg
     
     def int_trans(self):
@@ -99,20 +107,51 @@ class str_to_instruction():  # 문자열을 명령어로
         self.list_of_instruction = list()
 
     def MoveR(self):
-        self.list_of_instruction.append('R')
+        self.cm_list.append('R')
 
     def MoveL(self):
-        self.list_of_instruction.append('L')
+        self.cm_list.append('L')
 
     def MoveF(self):
-        self.list_of_instruction.append('F')
+        self.cm_list.append('F')
 
     def MoveD(self):
-        self.list_of_instruction.append('D')
+        self.cm_list.append('D')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.list_of_instruction
 
+class Agent(BehaviorModelExecutor):
+    def __init__(self, instance_time, destruct_time, name, engine_name):
+        BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
+
+        self.init_state("IDLE")
+        self.insert_state("IDLE", Infinite) 
+        self.insert_state("MOVE", 1)  
+
+        self.insert_input_port("start") 
+        self.cm_list = []  
+
+    def ext_trans(self,port, msg): 
+        if port == "start":
+            print(f"[Agent][IN]: {datetime.datetime.now()}")
+            self._cur_state = "MOVE"
+
+    def output(self): 
+        print(f"[Agent][OUT]: {datetime.datetime.now()}")
+        return None
+        
+    def int_trans(self):    
+        if self._cur_state == "MOVE":
+            self._cur_state = "IDLE" 
+        else:
+            self._cur_state = "MOVE"
+
+    def list_of_instruction(self, list):
+        self.cm_list = list
+
+    def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
+        return self.cm_list
 
 # System Simulator Initialization
 se = SystemSimulator()
@@ -157,15 +196,17 @@ for i in range(height):
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
 
-
-se.get_engine("sname").insert_input_port("start")
-se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
-
 s = str_to_instruction()
 print("명령어 입력 :")
 str = input()
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
+A = Agent(0, Infinite, "hi", "sname")
+A.list_of_instruction(A.get_instruction())
+
+se.get_engine("sname").insert_input_port("start")
+se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
+
 se.get_engine("sname").insert_external_event(
-    "start", s.get_instruction())  # 만들어진 명령어 리스트를 insert
+    "start", A)  # 만들어진 명령어 리스트를 insert
 se.get_engine("sname").simulate()
