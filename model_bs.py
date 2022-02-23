@@ -42,14 +42,12 @@ class Cell(BehaviorModelExecutor):
 
     def ext_trans(self, port, msg):
         # if port == "east":
-        print("\n")
         print(f"[{self.ix}, {self.iy}][IN]: {datetime.datetime.now()}")
         self.cancel_rescheduling()
         data = msg.retrieve()
-        #print(data)
         self.cm_list = data[0]
         print(f"Current Location:{self.get_name()}")
-        print("instruction list : ", self.cm_list)
+        print(self.cm_list)
         self._cur_state = "MOVE"
 
     def output(self):
@@ -64,31 +62,12 @@ class Cell(BehaviorModelExecutor):
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
-                next = input("Go back to prev-location. Input new Command : "
-                             )  # 이전 위치로 돌아왔음을 알려주고, 새로운 방향 입력
-
-                # 명령어 리스트의 맨 앞에 위에서 입력 받은 새로운 방향 명령 추가
-                if next == "F":
-                    self.cm_list.insert(0, next)
-                elif next == "L":
-                    self.cm_list.insert(0, next)
-                elif next == "B":
-                    self.cm_list.insert(0, next)
-
         elif self.cm == "F":
             msg = SysMessage(self.get_name(), "north")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
-
-                next = input("Go back to prev-location. Input new Command : ")
-                if next == "L":
-                    self.cm_list.insert(0, next)
-                elif next == "R":
-                    self.cm_list.insert(0, next)
-                elif next == "B":
-                    self.cm_list.insert(0, next)
 
         elif self.cm == "L":
             msg = SysMessage(self.get_name(), "west")
@@ -97,28 +76,12 @@ class Cell(BehaviorModelExecutor):
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
-                next = input("Go back to prev-location. Input new Command : ")
-                if next == "F":
-                    self.cm_list.insert(0, next)
-                elif next == "R":
-                    self.cm_list.insert(0, next)
-                elif next == "B":
-                    self.cm_list.insert(0, next)
-
-        elif self.cm == "B":
+        elif self.cm == "D":
             msg = SysMessage(self.get_name(), "south")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
-
-                next = input("Go back to prev-location. Input new Command : ")
-                if next == "F":
-                    self.cm_list.insert(0, next)
-                elif next == "R":
-                    self.cm_list.insert(0, next)
-                elif next == "L":
-                    self.cm_list.insert(0, next)
 
         msg.insert(self.cm_list)
         return msg
@@ -145,7 +108,7 @@ class str_to_instruction():  # 문자열을 명령어로
         self.list_of_instruction.append('F')
 
     def MoveD(self):
-        self.list_of_instruction.append('B')
+        self.list_of_instruction.append('D')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.list_of_instruction
@@ -166,9 +129,11 @@ for i in range(height):
     col = list()
     for j in range(width):
         if i == 0 and j == 0:  # 시작점은 장애물 x
-            c = Cell(0, Infinite, "", "sname", i, j, False)
+            c = Cell(0, Infinite, "", "sname", j, i, False)
+        elif i == 1 and j == 0:
+            c = Cell(0, Infinite, "", "sname", j, i, True)
         else:
-            c = Cell(0, Infinite, "", "sname", i, j,
+            c = Cell(0, Infinite, "", "sname", j, i,
                      random.choice([True, False, False,
                                     False]))  # 랜덤으로 장애물 생성  True = 장애물
         se.get_engine("sname").register_entity(c)
