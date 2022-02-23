@@ -61,7 +61,7 @@ class Cell(BehaviorModelExecutor):
             if (self.get_blocked() == True):  # 만약 장애물이라면
                 # get_blocked() 는 definition.py 에 있음
                 msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
-                print("***The current cell is blocked.***")
+                print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
                 next = input("Go back to prev-location. Input new Command : "
@@ -79,7 +79,7 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "north")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
-                print("***The current cell is blocked.***")
+                print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
                 next = input("Go back to prev-location. Input new Command : ")
@@ -94,7 +94,8 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "west")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "east")
-                print("***The current cell is blocked.***")
+                print(
+                    f"***The current cell [{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
                 next = input("Go back to prev-location. Input new Command : ")
@@ -109,7 +110,7 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "south")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
-                print("***The current cell is blocked.***")
+                print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
 
                 next = input("Go back to prev-location. Input new Command : ")
