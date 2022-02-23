@@ -148,12 +148,20 @@ class Agent():
 
     def ifMove(self):
         if self.flag == 'rb':
+            if self.set_rbMove == None:
+                return
             exec(self.set_rbMove)
         elif self.flag == 'lb':
+            if self.set_lbMove == None:
+                return
             exec(self.set_lbMove)
         elif self.flag == 'fb':
+            if self.set_fbMove == None:
+                return
             exec(self.set_fbMove)
         elif self.flag == 'db':
+            if self.set_dbMove == None:
+                return
             exec(self.set_dbMove)
         
     def list_of_instruction(self, s):
