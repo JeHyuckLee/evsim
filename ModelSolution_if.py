@@ -38,7 +38,7 @@ class Cell(BehaviorModelExecutor):
 
     def ext_trans(self, port, msg):
         # if port == "east":
-        print(f"[IN]: {datetime.datetime.now()}")
+        print(f"\n[IN]: {datetime.datetime.now()}")
         self.cancel_rescheduling()
         data = msg.retrieve()
         print(data)
@@ -50,91 +50,103 @@ class Cell(BehaviorModelExecutor):
         self.cm = self.cm_list.pop(0)
 
         if self.cm == "R":
-            print(f"\nCurrent Location:{self.get_name()}") # 이동전 현재 위치 출력
-            msg = SysMessage(self.get_name(), "east") # Right니까 east(동쪽) 이동하도록
-            print(f"[OUT]: {datetime.datetime.now()}") # 현재 시간 출력
+            print(f"Current Location:{self.get_name()}") # 현재 위치 출력
 
-            # 만약 가려는 방향이 장애물이라면,
-            if (self.get_blocked() == True): # get_blocked() 는 definition.py에 있음
-
-                print("***The current cell is blocked.***") # 장애물 마주쳤다는 메세지 출력
-                msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
-
-                next = input("Go back to prev-location. Input new Command : ") # 직전 위치로 돌아왔음을 알려주고, 새로운 방향 입력
-                
-                # 명령어 리스트의 맨 앞에 위에서 입력 받은 새로운 방향 명령 추가
-                if next == "F" :
-                    s.get_instruction().insert(0, next)
-                elif next == "L" :
-                    s.get_instruction().insert(0, next)
+            # 만약 가려는 방향이 막혀있다면,
+            if (self.get_blocked() == True):
+                print("***The current cell is blocked.***") # 막혀있다는 안내문구 출력
+                next = input("Stay prev-location. Input new Command : ") # 이전 위치에 머물러 있음을 알려주고, 새로운 방향을 입력
+                # 입력 받은 새로운 방향을 명령어 리스트의 맨 앞에 삽입
+                if next == "L" :
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "west")
+                elif next == "F" :
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "front")
                 elif next == "B" :
-                    s.get_instruction().insert(0, next)
-
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "south")
+            else :
+                    msg = SysMessage(self.get_name(), "east") # 막혀 있지 않으면 원래 방향으로 이동 (Right 우 = East 동)
+            
             msg.insert(self.cm_list)
+            print(f"[OUT]: {datetime.datetime.now()}") # 이동 완료 표시
+            print(f"Current Location:{self.get_name()}") # 이동 후 현재 위치 출력
             return msg
 
         elif self.cm == "F":
-            print(f"\nCurrent Location:{self.get_name()}")
-            
-            if (self.get_blocked() == True):
-                print("***The current cell is blocked.***")
-                msg = SysMessage(self.get_name(), "south")
+            print(f"Current Location:{self.get_name()}") # 현재 위치 출력
 
-                next = input("Go back to prev-location. Input new Command : ")
+            # 만약 가려는 방향이 막혀있다면,
+            if (self.get_blocked() == True):
+                print("***The current cell is blocked.***") # 막혀있다는 안내문구 출력
+                next = input("Stay prev-location. Input new Command : ") # 이전 위치에 머물러 있음을 알려주고, 새로운 방향을 입력
+                # 입력 받은 새로운 방향을 명령어 리스트의 맨 앞에 삽입
                 if next == "L" :
                     self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "west")
                 elif next == "R" :
                     self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "east")
                 elif next == "B" :
-                    s.get_instruction().insert(0, next)
-
-            msg = SysMessage(self.get_name(), "north")
-
-            print(f"[OUT]: {datetime.datetime.now()}")
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "south")
+            else :
+                    msg = SysMessage(self.get_name(), "north") # 막혀 있지 않으면 원래 방향으로 이동 (Front 앞 = North 북)
             
             msg.insert(self.cm_list)
+            print(f"[OUT]: {datetime.datetime.now()}") # 이동 완료 표시
+            print(f"Current Location:{self.get_name()}") # 이동 후 현재 위치 출력
             return msg
 
         elif self.cm == "L":
-            print(f"\nCurrent Location:{self.get_name()}")
-            msg = SysMessage(self.get_name(), "west")
+            print(f"Current Location:{self.get_name()}") # 현재 위치 출력
 
-            print(f"[OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
+            # 만약 가려는 방향이 막혀있다면,
             if (self.get_blocked() == True):
-                print("***The current cell is blocked.***")
-                msg = SysMessage(self.get_name(), "east")
-
-                next = input("Go back to prev-location. Input new Command : ")
+                print("***The current cell is blocked.***") # 막혀있다는 안내문구 출력
+                next = input("Stay prev-location. Input new Command : ") # 이전 위치에 머물러 있음을 알려주고, 새로운 방향을 입력
+                # 입력 받은 새로운 방향을 명령어 리스트의 맨 앞에 삽입
                 if next == "F" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "north")
                 elif next == "R" :
-                    s.get_instruction().insert(0, next)
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "east")
                 elif next == "B" :
-                    s.get_instruction().insert(0, next)
-
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "south")
+            else :
+                    msg = SysMessage(self.get_name(), "west") # 막혀 있지 않으면 원래 방향으로 이동 (Left 좌 = West 서)
+            
             msg.insert(self.cm_list)
+            print(f"[OUT]: {datetime.datetime.now()}") # 이동 완료 표시
+            print(f"Current Location:{self.get_name()}") # 이동 후 현재 위치 출력
             return msg
 
         elif self.cm == "B":
-            print(f"\nCurrent Location:{self.get_name()}")
-            msg = SysMessage(self.get_name(), "south")
-            print(f"[OUT]: {datetime.datetime.now()}")
-            #print("Next location: (1,0)")
+            print(f"Current Location:{self.get_name()}") # 현재 위치 출력
+
+            # 만약 가려는 방향이 막혀있다면,
             if (self.get_blocked() == True):
-                print("***The current cell is blocked.***")
-                msg = SysMessage(self.get_name(), "north")
-
-                next = input("Go back to prev-location. Input new Command : ")
-                if next == "F" :
-                    s.get_instruction().insert(0, next)
+                print("***The current cell is blocked.***") # 막혀있다는 안내문구 출력
+                next = input("Stay prev-location. Input new Command : ") # 이전 위치에 머물러 있음을 알려주고, 새로운 방향을 입력
+                # 입력 받은 새로운 방향을 명령어 리스트의 맨 앞에 삽입
+                if next == "L" :
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "west")
                 elif next == "R" :
-                    s.get_instruction().insert(0, next)
-                elif next == "L" :
-                    s.get_instruction().insert(0, next)
-
-
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "east")
+                elif next == "F" :
+                    self.cm_list.insert(0, next)
+                    msg = SysMessage(self.get_name(), "north")
+            else :
+                    msg = SysMessage(self.get_name(), "south") # 막혀 있지 않으면 원래 방향으로 이동 (Back 뒤 = South 남)
+            
             msg.insert(self.cm_list)
+            print(f"[OUT]: {datetime.datetime.now()}") # 이동 완료 표시
+            print(f"Current Location:{self.get_name()}") # 이동 후 현재 위치 출력
             return msg
 
     def int_trans(self):
