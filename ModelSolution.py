@@ -197,11 +197,13 @@ root.resizable(False, False)
 width, height = 540, 540
 x, y = (root.winfo_screenwidth() - width) / 2, (root.winfo_screenheight() -
                                                 height) / 2
-root.geometry("%dx%d+%d+%d" % (width, height, x, y))
+root.geometry("%dx%d+%d+%d" % (width, height, x, y))  #창을 중앙에 배치
 
-canvas = Canvas(root, width=width, height=height, bg="white")
+canvas = Canvas(root, width=width, height=height,
+                bg="white")  #게임화면을 그리는 canvas
 canvas.focus_set()
 canvas.pack()
+
 for y in range(len(map[0])):
     for x in range(len(map[y])):
         if map[y][x] == 1:
@@ -212,12 +214,12 @@ for y in range(len(map[0])):
                                     fill="black")
         # elif map[y][x] == 2:
         #     player = Player(canvas, x, y)
-        elif map[y][x] == 3:
-            canvas.create_oval(x * 30,
-                               y * 30,
-                               x * 30 + 30,
-                               y * 30 + 30,
-                               fill="blue")
+        # elif map[y][x] == 3:
+        #     canvas.create_oval(x * 30,
+        #                        y * 30,
+        #                        x * 30 + 30,
+        #                        y * 30 + 30,
+        #                        fill="blue")
 root.mainloop()
 
 for i in range(height):
