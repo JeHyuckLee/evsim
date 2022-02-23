@@ -1,13 +1,15 @@
 from system_executor import SysExecutor
 from definition import SingletonType
 
+
 class SystemSimulator(object):
     __metaclass__ = SingletonType
     _engine = {}
 
     @staticmethod
     def register_engine(sim_name, sim_mode='VIRTUAL_TIME', time_step=1):
-        SystemSimulator._engine[sim_name] = SysExecutor(time_step, sim_name, sim_mode)
+        SystemSimulator._engine[sim_name] = SysExecutor(
+            time_step, sim_name, sim_mode)
 
     @staticmethod
     def get_engine_map():
@@ -45,4 +47,3 @@ class SystemSimulator(object):
 
     def __init__(self):
         pass
-

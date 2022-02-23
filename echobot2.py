@@ -44,10 +44,12 @@ with conn:
     conn.commit()
 '''
 
-#cur.execute("INSERT INTO customer(name, category, region)\
+# cur.execute("INSERT INTO customer(name, category, region)\
 #             VALUES ('cbchoi', 1, 'Daejeon');")
 # Define a few command handlers. These usually take the two arguments update and
 # context.
+
+
 def start(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
@@ -63,6 +65,7 @@ def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     update.message.reply_text('Help!')
 
+
 def check(update: Update, context: CallbackContext) -> None:
     conn = sqlite3.connect("chat.db")
 
@@ -70,18 +73,19 @@ def check(update: Update, context: CallbackContext) -> None:
     with conn:
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM chat_msg;")
-        
+
         for row in cur.fetchall():
             text += row[2]
             text += "\n"
-        
+
         conn.commit()
-    
+
     update.message.reply_text(text)
+
 
 def echo(update: Update, context: CallbackContext) -> None:
     """Echo the user message."""
-    
+
     conn = sqlite3.connect("chat.db")
 
     with conn:
@@ -89,7 +93,7 @@ def echo(update: Update, context: CallbackContext) -> None:
         cur.execute(f"INSERT INTO chat_msg(chat_id, msg)\
              VALUES ({update.message.chat_id},'{update.message.text}');")
         conn.commit()
-    
+
     update.message.reply_text(update.message.text)
 
 
@@ -109,7 +113,8 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("check", check))
 
     # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(
+        Filters.text & ~Filters.command, echo))
 
     # Start the Bot
     updater.start_polling()

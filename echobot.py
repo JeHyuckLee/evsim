@@ -47,29 +47,28 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def echo(update: Update, context: CallbackContext) -> None:
     """Echo the user message."""
     update.message.reply_text(update.message.text)
-    
+
     conn = sqlite3.connect("chat.db")
-    
+
     with conn:
-    # Create Cursor from connection object
+        # Create Cursor from connection object
         cur = conn.cursor()
-     
+
     # Put SQL Query
        # cur.execute("CREATE TABLE \
         #        message(id integer primary key autoincrement, \
-         #           msg text not null, category integer, \
-          #          region text);")
+        #           msg text not null, category integer, \
+        #          region text);")
 
-
-        cur.execute("INSERT INTO message(msg) VALUES(?)", (update.message.text,))
+        cur.execute("INSERT INTO message(msg) VALUES(?)",
+                    (update.message.text,))
         cur.execute("SELECT msg FROM message")
 
     for row in cur.fetchall():
-       update.message.reply_text(row)
-    
+        update.message.reply_text(row)
+
     # Reflect to Database
     conn.commit()
-
 
 
 def main() -> None:
@@ -85,7 +84,8 @@ def main() -> None:
     dispatcher.add_handler(CommandHandler("help", help_command))
 
     # on non command i.e message - echo the message on Telegram
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(MessageHandler(
+        Filters.text & ~Filters.command, echo))
 
     # Start the Bot
     updater.start_polling()

@@ -1,4 +1,5 @@
-from system_object import  SysObject
+from system_object import SysObject
+
 
 class SysMessage(SysObject):
     def __init__(self, src_name="", dst_name=""):
@@ -10,7 +11,7 @@ class SysMessage(SysObject):
 
     def __str__(self):
         return super(SysMessage, self).__str__() + \
-                f"\tSRC:{self._src}\t DST:{self._dst}"
+            f"\tSRC:{self._src}\t DST:{self._dst}"
 
     def insert(self, msg):
         self._msg_list.append(msg)
