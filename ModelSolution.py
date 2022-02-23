@@ -1,6 +1,7 @@
 from cmath import sqrt
 from dis import Instruction
 from doctest import FAIL_FAST
+from operator import imod
 from re import T
 
 from system_simulator import SystemSimulator
@@ -10,6 +11,8 @@ from definition import *
 import datetime
 import sys
 import random
+from tkinter import *
+from tkinter import messagebox
 
 
 class Cell(BehaviorModelExecutor):
@@ -163,18 +166,59 @@ width = 100
 height = 100
 
 mat = list()
+map = list()  #시각화를 위한 list
 for i in range(height):
-    col = list()
+    col = list()  #시각화를 위한 list
+    map_col = list()
     for j in range(width):
         if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", i, j, False)
         else:
+            b = random.choice([True, False, False, False])
             c = Cell(0, Infinite, "", "sname", i, j,
-                     random.choice([True, False, False,
-                                    False]))  # 랜덤으로 장애물 생성  True = 장애물
+                     b)  # 랜덤으로 장애물 생성  True = 장애물
+
+            if (b == True):  #장애물
+                map_col.append(1)
+            else:
+                map_col.append(0)
         se.get_engine("sname").register_entity(c)
         col.append(c)
+
+    map.append(map_col)
     mat.append(col)
+
+#시각화파트
+root = Tk()
+root.title("simple map")
+root.resizable(False, False)
+
+# 창 너비, 높이, 위치 설정
+width, height = 540, 540
+x, y = (root.winfo_screenwidth() - width) / 2, (root.winfo_screenheight() -
+                                                height) / 2
+root.geometry("%dx%d+%d+%d" % (width, height, x, y))
+
+canvas = Canvas(root, width=width, height=height, bg="white")
+canvas.focus_set()
+canvas.pack()
+for y in range(len(map[0])):
+    for x in range(len(map[y])):
+        if map[y][x] == 1:
+            canvas.create_rectangle(x * 30,
+                                    y * 30,
+                                    x * 30 + 30,
+                                    y * 30 + 30,
+                                    fill="black")
+        # elif map[y][x] == 2:
+        #     player = Player(canvas, x, y)
+        elif map[y][x] == 3:
+            canvas.create_oval(x * 30,
+                               y * 30,
+                               x * 30 + 30,
+                               y * 30 + 30,
+                               fill="blue")
+root.mainloop()
 
 for i in range(height):
     for j in range(width):
@@ -204,4 +248,5 @@ exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
 se.get_engine("sname").insert_external_event(
     "start", s.get_instruction())  # 만들어진 명령어 리스트를 insert
+
 se.get_engine("sname").simulate()
