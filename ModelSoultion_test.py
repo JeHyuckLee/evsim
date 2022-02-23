@@ -116,40 +116,52 @@ class str_to_instruction():  # 문자열을 명령어로
         self.cm_list = list()
 
     def MoveR(self):
-        self.cm_list.append('R')
+        self.cm_list.insert(0, 'R')
 
     def MoveL(self):
-        self.cm_list.append('L')
+        self.cm_list.insert(0, 'L')
 
     def MoveF(self):
-        self.cm_list.append('F')
+        self.cm_list.insert(0, 'F')
 
     def MoveD(self):
-        self.cm_list.append('D')
+        self.cm_list.insert(0, 'D')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.cm_list
 
 class Agent():
     def __init__(self):
+        self.cm_s = ''
         self.cm_list = []
-        self.flag = ""
+        self.flag = ''
+    
+    def set_ifMove(self, block, move):
+        if block == 'rb':
+            self.set_rbMove = move
+        elif block == 'lb':
+            self.set_lbMove = move
+        elif block == 'fb':
+            self.set_fbMove = move
+        elif block == 'db':
+            self.set_dbMove = move
 
     def ifMove(self):
         if self.flag == 'rb':
-            self.cm_list.insert(0, "F")
+            exec(self.set_rbMove)
         elif self.flag == 'lb':
-            self.cm_list.insert(0, "D")
+            exec(self.set_lbMove)
         elif self.flag == 'fb':
-            self.cm_list.insert(0, "R")
+            exec(self.set_fbMove)
         elif self.flag == 'db':
-            self.cm_list.insert(0, "L")
-        return None
+            exec(self.set_dbMove)
         
-    def list_of_instruction(self, list):
-        self.cm_list = list
+    def list_of_instruction(self, s):
+        self.cm_s = s
+        for i in range(4): s.MoveF()
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
+        self.cm_list = self.cm_s.get_instruction()
         return self.cm_list
     
     def set_flag(self, flag):
@@ -198,13 +210,14 @@ for i in range(height):
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
 
+A = Agent()
+
 s = str_to_instruction()
 print("명령어 입력 :")
 str = input()
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
-A = Agent()
-A.list_of_instruction(s.get_instruction())
+A.list_of_instruction(s)
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
