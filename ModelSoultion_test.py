@@ -202,7 +202,7 @@ str = input()
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
 A = Agent(0, Infinite, "hi", "sname")
-A.list_of_instruction(A.get_instruction())
+A.list_of_instruction(str)
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
