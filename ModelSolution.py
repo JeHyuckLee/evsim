@@ -55,10 +55,15 @@ class Cell(BehaviorModelExecutor):
         self._cur_state = "MOVE"
 
     def output(self):
+
         self.cm = self.cm_list.pop(0)
         print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
 
         if self.cm == "R":
+            #쿼리, 주위의셀의 정보를 가져오도록 numpy 주위의셀을 array로
+
+            #UI
+
             msg = SysMessage(self.get_name(), "east")
             if (self.get_blocked() == True):  # 만약 장애물이라면
                 # get_blocked() 는 definition.py 에 있음
@@ -136,24 +141,53 @@ class Cell(BehaviorModelExecutor):
 class str_to_instruction():  # 문자열을 명령어로
     # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
     def __init__(self):
-        self.list_of_instruction = list()
+        self.instructions = list()
+        #변수명 깔끔하게
 
     def MoveR(self):
-        self.list_of_instruction.append('R')
+        self.instructions.append('R')
 
     def MoveL(self):
-        self.list_of_instruction.append('L')
+        self.instructions.append('L')
 
     def MoveF(self):
-        self.list_of_instruction.append('F')
+        self.instructions.append('F')
 
     def MoveD(self):
-        self.list_of_instruction.append('B')
+        self.instructions.append('B')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
-        return self.list_of_instruction
+        return self.instructions
 
 
+class agent():
+
+    def __init__(self, canvas, x, y):
+        self.canvas = canvas
+        self.id = canvas.create_oval(x * 30,
+                                     y * 30,
+                                     x * 30 + 30,
+                                     y * 30 + 30,
+                                     fill="red")
+        self.x, self.y = x, y
+        self.nx, self.ny = x, y
+
+    def move(self, direction):
+        if direction == 'L':
+            self.nx, self.ny = self.x, self.y - 1
+        elif direction == 'B':
+            self.nx, self.ny = self.x - 1, self.y
+        elif direction == 'R':
+            self.nx, self.ny = self.x, self.y + 1
+        elif direction == 'F':
+            self.nx, self.ny = self.x + 1, self.y
+        self.canvas.move(self.id, (self.nx - self.x) * 30,
+                         (self.ny - self.y) * 30)
+        self.x, self.y = self.nx, self.ny
+
+
+#1~160 객체 표현
+#이후 객체조합``
 # System Simulator Initialization
 se = SystemSimulator()
 
@@ -172,6 +206,7 @@ for i in range(height):
     for j in range(width):
         if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", j, i, False)
+            map_col.append(2)
         else:
             b = random.choice([True, False, False])
             c = Cell(0, Infinite, "", "sname", j, i,
@@ -205,8 +240,7 @@ for i in range(height):
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
-
-#시각화파트
+"""------------시각화파트----------------"""
 root = Tk()
 root.title("simple map")
 root.resizable(False, False)
@@ -230,13 +264,9 @@ for y in range(len(simple_map[0])):
                                     x * 30 + 30,
                                     y * 30 + 30,
                                     fill="black")
-        # elif simple_map[y][x] == 0:
-        #     canvas.create_oval(x * 30,
-        #                        y * 30,
-        #                        x * 30 + 30,
-        #                        y * 30 + 30,
-        #                        fill="blue")
-root.mainloop()
+        elif simple_map[y][x] == 2:
+            player = agent(canvas, x, y)
+"""------------시각화파트----------------"""
 
 s = str_to_instruction()
 print("명령어 입력 :")
@@ -247,3 +277,13 @@ se.get_engine("sname").insert_external_event(
     "start", s.get_instruction())  # 만들어진 명령어 리스트를 insert
 
 se.get_engine("sname").simulate()
+root.mainloop()
+#에이전트도 모델, 환경도 모델로 구현
+#현재위치에서 주위의 정보를 전달
+#low level 에서 구현
+
+#모델을 추가 모든 에이전트는 그 모델에 연결
+#매니저가 에이전트에게 현재 셀의 정보를준다.
+# 1. 손으로 찾아보세요?
+# 2. IF, FOR문을 알려준다.
+# 3.
