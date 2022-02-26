@@ -63,43 +63,65 @@ class Cell(BehaviorModelExecutor):
             if (self.get_blocked() == True):  # 만약 장애물이라면
                 # get_blocked() 는 definition.py 에 있음
                 msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
-                self.agent.set_flag('db')
                 print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
+
+                next = input("Go back to prev-location. Input new Command : "
+                             )  # 이전 위치로 돌아왔음을 알려주고, 새로운 방향 입력
+
+                # 명령어 리스트의 맨 앞에 위에서 입력 받은 새로운 방향 명령 추가
+                if next == "F":
+                    self.cm_list.insert(0, next)
+                elif next == "L":
+                    self.cm_list.insert(0, next)
+                elif next == "B":
+                    self.cm_list.insert(0, next)
 
         elif self.cm == "F":
             msg = SysMessage(self.get_name(), "north")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
-                self.agent.set_flag('db')
                 print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
+
+                next = input("Go back to prev-location. Input new Command : ")
+                if next == "L":
+                    self.cm_list.insert(0, next)
+                elif next == "R":
+                    self.cm_list.insert(0, next)
+                elif next == "B":
+                    self.cm_list.insert(0, next)
 
         elif self.cm == "L":
             msg = SysMessage(self.get_name(), "west")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "east")
-                self.agent.set_flag('db')
                 print(
                     f"***The current cell [{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
+
+                next = input("Go back to prev-location. Input new Command : ")
+                if next == "F":
+                    self.cm_list.insert(0, next)
+                elif next == "R":
+                    self.cm_list.insert(0, next)
+                elif next == "B":
+                    self.cm_list.insert(0, next)
 
         elif self.cm == "B":
             msg = SysMessage(self.get_name(), "south")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
-                self.agent.set_flag('db')
-
                 print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
+
+                next = input("Go back to prev-location. Input new Command : ")
+                if next == "F":
+                    self.cm_list.insert(0, next)
+                elif next == "R":
+                    self.cm_list.insert(0, next)
+                elif next == "L":
+                    self.cm_list.insert(0, next)
 
         msg.insert(self.cm_list)
         return msg
