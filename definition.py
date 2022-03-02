@@ -37,8 +37,7 @@ class AttributeType(Enum):
 class SimulationMode(Enum):
     SIMULATION_IDLE = 0  # Simulation Engine is instantiated but simulation is not running
     SIMULATION_RUNNING = 1  # Simulation Engine is instantiated, simulation is running
-    # Simulation Engine is instantiated but simulation is terminated
-    SIMULATION_TERMINATED = 2
+    SIMULATION_TERMINATED = 2  # Simulation Engine is instantiated but simulation is terminated
     SIMULATION_PAUSE = 3  # Simulation Engine is instantiated, simulation paused
     SIMULATION_UNKNOWN = -1  # Simulation Engine went to abnormal state
 
@@ -85,7 +84,7 @@ class CoreModel(object):
     def retrieve_output_ports(self):
         return self._output_ports
 
-    # def resolve_ports(self):
+    #def resolve_ports(self):
 
     def get_type(self):
         return self._type
