@@ -2,6 +2,7 @@ from cmath import sqrt
 from dis import Instruction
 from doctest import FAIL_FAST
 from re import T
+from shutil import move
 
 from system_simulator import SystemSimulator
 from behavior_model_executor import BehaviorModelExecutor
@@ -90,11 +91,11 @@ class Cell(BehaviorModelExecutor):
                 self.agent.ifMove()
                 self.agent.set_flag(None)
 
-        elif self.cm == "D":
+        elif self.cm == "B":
             msg = SysMessage(self.get_name(), "south")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
-                self.agent.set_flag('db') 
+                self.agent.set_flag('bb') 
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
@@ -124,27 +125,34 @@ class str_to_instruction():  # 문자열을 명령어로
     def MoveF(self):
         self.cm_list.insert(0, 'F')
 
-    def MoveD(self):
-        self.cm_list.insert(0, 'D')
+    def MoveB(self):
+        self.cm_list.insert(0, 'B')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.cm_list
 
 class Agent():
     def __init__(self):
-        self.cm_s = ''
-        self.cm_list = []
-        self.flag = ''
+        self.cm_s = None # 클래스 str_to_instruction
+
+        self.set_rbMove = None # 막혔을때 이동설정
+        self.set_lbMove = None
+        self.set_fbMove = None
+        self.set_bbMove = None
+
+        self.cm_list = [] # 움직임 리스트
+
+        self.flag = None # 막힘여부 플래그
     
-    def set_ifMove(self, block, move):
+    def set_ifMove(self, block, MoveSet):
         if block == 'rb':
-            self.set_rbMove = move
+            self.set_rbMove = MoveSet
         elif block == 'lb':
-            self.set_lbMove = move
+            self.set_lbMove = MoveSet
         elif block == 'fb':
-            self.set_fbMove = move
-        elif block == 'db':
-            self.set_dbMove = move
+            self.set_fbMove = MoveSet
+        elif block == 'bb':
+            self.set_bbMove = MoveSet
 
     def ifMove(self):
         if self.flag == 'rb':
@@ -159,14 +167,14 @@ class Agent():
             if self.set_fbMove == None:
                 return
             exec(self.set_fbMove)
-        elif self.flag == 'db':
-            if self.set_dbMove == None:
+        elif self.flag == 'bb':
+            if self.set_bbMove == None:
                 return
-            exec(self.set_dbMove)
+            exec(self.set_bbMove)
         
     def list_of_instruction(self, s):
         self.cm_s = s
-        for i in range(4): s.MoveF()
+        # for i in range(4): s.MoveF()
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         self.cm_list = self.cm_s.get_instruction()
@@ -192,6 +200,8 @@ for i in range(height):
         if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", j, i, False)
         elif i == 1 and j == 0:
+            c = Cell(0, Infinite, "", "sname", j, i, True)
+        elif i == 0 and j == 1:
             c = Cell(0, Infinite, "", "sname", j, i, True)
         else:
             c = Cell(0, Infinite, "", "sname", j, i,
@@ -221,15 +231,19 @@ for i in range(height):
 A = Agent()
 
 s = str_to_instruction()
-print("명령어 입력 :")
-str = input()
+# print("명령어 한줄 입력 :")
+# str = input()
+str = '''
+for i in range(4): s.MoveF()
+A.set_ifMove('fb', 's.MoveR()')
+'''
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
+print(f"명령어 : {str}")
 A.list_of_instruction(s)
 
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
-se.get_engine("sname").insert_external_event(
-    "start", A)  # 만들어진 명령어 리스트를 insert
+se.get_engine("sname").insert_external_event("start", A)  # 만들어진 명령어 리스트를 insert
 se.get_engine("sname").simulate()
