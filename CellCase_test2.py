@@ -243,6 +243,8 @@ s = str_to_instruction()
 for i in range(10):
     s.MoveF()
 agent.set_ifMove('F', agent.move('R'))
+
     
 se.get_engine("sname").insert_external_event("start", s.get_instruction())
 se.get_engine("sname").simulate()
+
