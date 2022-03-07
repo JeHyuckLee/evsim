@@ -23,7 +23,7 @@ class Cell(BehaviorModelExecutor):
         self.init_state("IDLE")
         self.insert_state("IDLE", Infinite)
         self.insert_state("MOVE", 1)
-        
+
         self.ix = ix
         self.iy = iy
 
@@ -75,7 +75,7 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "north")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
-                self.agent.set_flag('fb') 
+                self.agent.set_flag('fb')
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
@@ -95,7 +95,7 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "south")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
-                self.agent.set_flag('bb') 
+                self.agent.set_flag('bb')
                 print("***The current cell is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
@@ -103,7 +103,7 @@ class Cell(BehaviorModelExecutor):
 
         msg.insert(self.agent)
         return msg
-    
+
     def int_trans(self):
         if self._cur_state == "MOVE":
             self._cur_state = "IDLE"
@@ -131,19 +131,21 @@ class str_to_instruction():  # 문자열을 명령어로
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.cm_list
 
-class Agent():
-    def __init__(self):
-        self.cm_s = None # 클래스 str_to_instruction
 
-        self.set_rbMove = None # 막혔을때 이동설정
+class Agent():
+
+    def __init__(self):
+        self.cm_s = None  # 클래스 str_to_instruction
+
+        self.set_rbMove = None  # 막혔을때 이동설정
         self.set_lbMove = None
         self.set_fbMove = None
         self.set_bbMove = None
 
-        self.cm_list = [] # 움직임 리스트
+        self.cm_list = []  # 움직임 리스트
 
-        self.flag = None # 막힘여부 플래그
-    
+        self.flag = None  # 막힘여부 플래그
+
     def set_ifMove(self, block, MoveSet):
         if block == 'rb':
             self.set_rbMove = MoveSet
@@ -171,7 +173,7 @@ class Agent():
             if self.set_bbMove == None:
                 return
             exec(self.set_bbMove)
-        
+
     def list_of_instruction(self, s):
         self.cm_s = s
         # for i in range(4): s.MoveF()
@@ -179,9 +181,10 @@ class Agent():
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         self.cm_list = self.cm_s.get_instruction()
         return self.cm_list
-    
+
     def set_flag(self, flag):
         self.flag = flag
+
 
 # System Simulator Initialization
 se = SystemSimulator()
@@ -205,7 +208,8 @@ for i in range(height):
             c = Cell(0, Infinite, "", "sname", j, i, True)
         else:
             c = Cell(0, Infinite, "", "sname", j, i,
-                     random.choice([True, False, False, False]))  # 랜덤으로 장애물 생성  True = 장애물
+                     random.choice([True, False, False,
+                                    False]))  # 랜덤으로 장애물 생성  True = 장애물
         se.get_engine("sname").register_entity(c)
         col.append(c)
     mat.append(col)
@@ -245,5 +249,6 @@ A.list_of_instruction(s)
 se.get_engine("sname").insert_input_port("start")
 se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
-se.get_engine("sname").insert_external_event("start", A)  # 만들어진 명령어 리스트를 insert
+se.get_engine("sname").insert_external_event("start",
+                                             A)  # 만들어진 명령어 리스트를 insert
 se.get_engine("sname").simulate()

@@ -44,17 +44,17 @@ class Cell(BehaviorModelExecutor):
 
     def ext_trans(self, port, msg):
         # if port == "east":
-        print("\n")
         print(f"[{self.ix}, {self.iy}][IN]: {datetime.datetime.now()}")
         self.cancel_rescheduling()
         data = msg.retrieve()
 
         self.agent = data[0]
+
         self.cm_list = self.agent.get_instruction()
-        # print(data)
 
         print(f"Current Location:{self.get_name()}")
         print("instruction list : ", self.cm_list)
+
         self._cur_state = "MOVE"
 
     def output(self):
@@ -66,7 +66,7 @@ class Cell(BehaviorModelExecutor):
             if (self.get_blocked() == True):  # 만약 장애물이라면
                 # get_blocked() 는 definition.py 에 있음
                 msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
-                self.agent.set_flag('db')
+                self.agent.set_flag('rb')
                 print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
@@ -76,7 +76,7 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "north")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "south")
-                self.agent.set_flag('db')
+                self.agent.set_flag('fb')
                 print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
@@ -86,9 +86,8 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "west")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "east")
-                self.agent.set_flag('db')
-                print(
-                    f"***The current cell [{self.get_name()}] is blocked.***")
+                self.agent.set_flag('lb')
+                print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
                 self.agent.set_flag(None)
@@ -97,8 +96,7 @@ class Cell(BehaviorModelExecutor):
             msg = SysMessage(self.get_name(), "south")
             if (self.get_blocked() == True):
                 msg = SysMessage(self.get_name(), "north")
-                self.agent.set_flag('db')
-
+                self.agent.set_flag('bb')
                 print(f"***The current cell[{self.get_name()}] is blocked.***")
                 self.cm_list.insert(0, self.cm)
                 self.agent.ifMove()
@@ -117,30 +115,36 @@ class Cell(BehaviorModelExecutor):
 class str_to_instruction():  # 문자열을 명령어로
     # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
     def __init__(self):
-        self.list_of_instruction = list()
+        self.cm_list = list()
 
     def MoveR(self):
-        self.list_of_instruction.append('R')
+        self.cm_list.insert(0, 'R')
 
     def MoveL(self):
-        self.list_of_instruction.append('L')
+        self.cm_list.insert(0, 'L')
 
     def MoveF(self):
-        self.list_of_instruction.append('F')
+        self.cm_list.insert(0, 'F')
 
-    def MoveD(self):
-        self.list_of_instruction.append('B')
+    def MoveB(self):
+        self.cm_list.insert(0, 'B')
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
-        return self.list_of_instruction
+        return self.cm_list
 
 
 class Agent():
 
-    def __init__(self):
+    def __init__(self, canvas):
+        self.canvas = canvas
         self.cm_s = ''
         self.cm_list = []
         self.flag = ''
+        self.id = canvas.create_oval(x * 30,
+                                     y * 30,
+                                     x * 30 + 30,
+                                     y * 30 + 30,
+                                     fill="red")
 
     def set_ifMove(self, block, move):
         if block == 'rb':
@@ -149,7 +153,7 @@ class Agent():
             self.set_lbMove = move
         elif block == 'fb':
             self.set_fbMove = move
-        elif block == 'db':
+        elif block == 'bb':
             self.set_dbMove = move
 
     def ifMove(self):
@@ -165,15 +169,13 @@ class Agent():
             if self.set_fbMove == None:
                 return
             exec(self.set_fbMove)
-        elif self.flag == 'db':
+        elif self.flag == 'bb':
             if self.set_dbMove == None:
                 return
             exec(self.set_dbMove)
 
     def list_of_instruction(self, s):
         self.cm_s = s
-        for i in range(4):
-            s.MoveF()
 
     def get_instruction(self):  # 만들어진 명령어 리스트를 반환한다.
         self.cm_list = self.cm_s.get_instruction()
@@ -182,8 +184,7 @@ class Agent():
     def set_flag(self, flag):
         self.flag = flag
 
-    def visualize(self, simple_map):
-
+    def visualize(self, simmap):
         root = Tk()
         root.title("simple map")
         root.resizable(False, False)
@@ -199,9 +200,9 @@ class Agent():
         canvas.focus_set()
         canvas.pack()
 
-        for y in range(len(simple_map[0])):
-            for x in range(len(simple_map[y])):
-                if simple_map[y][x] == 1:
+        for y in range(len(simmap[0])):
+            for x in range(len(simmap[y])):
+                if simmap[y][x] == 1:
                     canvas.create_rectangle(x * 30,
                                             y * 30,
                                             x * 30 + 30,
@@ -234,6 +235,8 @@ for i in range(height):
     for j in range(width):
         if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", j, i, False)
+        elif i == 1 and j == 0:
+            c = Cell(0, Infinite, "", "sname", j, i, True)
         else:
             b = random.choice([True, False, False])
             c = Cell(0, Infinite, "", "sname", j, i,
@@ -265,9 +268,6 @@ for i in range(height):
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
 
-se.get_engine("sname").insert_input_port("start")
-se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
-
 A = Agent()
 
 s = str_to_instruction()
@@ -276,9 +276,11 @@ str = input()
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
 A.list_of_instruction(s)
-se.get_engine("sname").insert_external_event(
-    "start", s.get_instruction())  # 만들어진 명령어 리스트를 insert
 
+se.get_engine("sname").insert_input_port("start")
+se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
+
+se.get_engine("sname").insert_external_event("start",
+                                             A)  # 만들어진 명령어 리스트를 insert
 se.get_engine("sname").simulate()
-
 A.visualize(simple_map)

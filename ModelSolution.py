@@ -2,6 +2,7 @@ from cmath import sqrt
 from dis import Instruction
 from doctest import FAIL_FAST
 from re import T
+from xml.dom.minidom import Element
 
 from system_simulator import SystemSimulator
 from behavior_model_executor import BehaviorModelExecutor
@@ -58,49 +59,39 @@ class Cell(BehaviorModelExecutor):
         self._cur_state = "MOVE"
 
     def output(self):
-        self.cm = self.cm_list.pop(0)
-        print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
 
-        if self.cm == "R":
-            msg = SysMessage(self.get_name(), "east")
-            if (self.get_blocked() == True):  # 만약 장애물이라면
-                # get_blocked() 는 definition.py 에 있음
-                msg = SysMessage(self.get_name(), "west")  # 왔던곳으로 다시 돌아간다.
-                self.agent.set_flag('rb')
-                print(f"***The current cell[{self.get_name()}] is blocked.***")
-                self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
-
-        elif self.cm == "F":
-            msg = SysMessage(self.get_name(), "north")
-            if (self.get_blocked() == True):
-                msg = SysMessage(self.get_name(), "south")
-                self.agent.set_flag('fb')
-                print(f"***The current cell[{self.get_name()}] is blocked.***")
-                self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
-
-        elif self.cm == "L":
-            msg = SysMessage(self.get_name(), "west")
-            if (self.get_blocked() == True):
+        if (self.get_blocked() == True):
+            self.agent.ifMove()
+            print(f"***The current cell[{self.get_name()}] is blocked.***")
+            flag = self.agent.get_flag()
+            if flag == 'rb':
+                msg = SysMessage(self.get_name(), "west")
+            elif flag == 'lb':
                 msg = SysMessage(self.get_name(), "east")
-                self.agent.set_flag('lb')
-                print(f"***The current cell[{self.get_name()}] is blocked.***")
-                self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
-
-        elif self.cm == "B":
-            msg = SysMessage(self.get_name(), "south")
-            if (self.get_blocked() == True):
+            elif flag == 'fb':
+                msg = SysMessage(self.get_name(), "south")
+            elif flag == 'bb':
                 msg = SysMessage(self.get_name(), "north")
+
+        else:
+            cm = self.cm_list.pop(0)
+            print(f"[{self.ix}, {self.iy}][OUT]: {datetime.datetime.now()}")
+
+            if cm == "R":
+                msg = SysMessage(self.get_name(), "east")
+                self.agent.set_flag('rb')
+
+            elif cm == "F":
+                msg = SysMessage(self.get_name(), "north")
+                self.agent.set_flag('fb')
+
+            elif cm == "L":
+                msg = SysMessage(self.get_name(), "west")
+                self.agent.set_flag('lb')
+
+            elif cm == "B":
+                msg = SysMessage(self.get_name(), "south")
                 self.agent.set_flag('bb')
-                print(f"***The current cell[{self.get_name()}] is blocked.***")
-                self.cm_list.insert(0, self.cm)
-                self.agent.ifMove()
-                self.agent.set_flag(None)
 
         msg.insert(self.agent)
         return msg
@@ -137,6 +128,12 @@ class Agent():
 
     def __init__(self):
         self.cm_s = ''
+
+        self.set_rbMove = None
+        self.set_lbMove = None
+        self.set_fbMove = None
+        self.set_bbMove = None
+
         self.cm_list = []
         self.flag = ''
 
@@ -148,7 +145,7 @@ class Agent():
         elif block == 'fb':
             self.set_fbMove = move
         elif block == 'bb':
-            self.set_dbMove = move
+            self.set_bbMove = move
 
     def ifMove(self):
         if self.flag == 'rb':
@@ -164,9 +161,9 @@ class Agent():
                 return
             exec(self.set_fbMove)
         elif self.flag == 'bb':
-            if self.set_dbMove == None:
-                return
-            exec(self.set_dbMove)
+            if self.set_bbMove == None:
+                return None
+            exec(self.set_bbMove)
 
     def list_of_instruction(self, s):
         self.cm_s = s
@@ -177,6 +174,42 @@ class Agent():
 
     def set_flag(self, flag):
         self.flag = flag
+
+    def get_flag(self):
+        return self.flag
+
+    def visualize(self, maplist):
+        #시각화파트
+        root = Tk()
+        root.title("simple map")
+        root.resizable(False, False)
+
+        # 창 너비, 높이, 위치 설정
+        width, height = 540, 540
+        x, y = (root.winfo_screenwidth() -
+                width) / 2, (root.winfo_screenheight() - height) / 2
+        root.geometry("%dx%d+%d+%d" % (width, height, x, y))  #창을 중앙에 배치
+
+        canvas = Canvas(root, width=width, height=height,
+                        bg="white")  #게임화면을 그리는 canvas
+        canvas.focus_set()
+        canvas.pack()
+        canvas.create_rectangle(0, 510, 30, 540, fill="blue")
+        for y in range(len(maplist[0])):
+            for x in range(len(maplist[y])):
+                if maplist[y][x] == 1:
+                    canvas.create_rectangle(x * 30,
+                                            510 - y * 30,
+                                            x * 30 + 30,
+                                            510 - y * 30 + 30,
+                                            fill="black")
+                # elif simple_map[y][x] == 0:
+                #     canvas.create_oval(x * 30,
+                #                        y * 30,
+                #                        x * 30 + 30,
+                #                        y * 30 + 30,
+                #                        fill="blue")
+        root.mainloop()
 
 
 # System Simulator Initialization
@@ -197,8 +230,10 @@ for i in range(height):
     for j in range(width):
         if i == 0 and j == 0:  # 시작점은 장애물 x
             c = Cell(0, Infinite, "", "sname", j, i, False)
-        elif i == 1 and j == 0:
+            map_col.append(0)
+        elif i == 0 and j == 1:
             c = Cell(0, Infinite, "", "sname", j, i, True)
+            map_col.append(1)
         else:
             b = random.choice([True, False, False])
             c = Cell(0, Infinite, "", "sname", j, i,
@@ -230,43 +265,16 @@ for i in range(height):
 #msg = SysMessage("cell", "")
 #msg.insert(["R", "L", "F", "D", "R", "F"])
 
-#시각화파트
-root = Tk()
-root.title("simple map")
-root.resizable(False, False)
-
-# 창 너비, 높이, 위치 설정
-width, height = 540, 540
-x, y = (root.winfo_screenwidth() - width) / 2, (root.winfo_screenheight() -
-                                                height) / 2
-root.geometry("%dx%d+%d+%d" % (width, height, x, y))  #창을 중앙에 배치
-
-canvas = Canvas(root, width=width, height=height,
-                bg="white")  #게임화면을 그리는 canvas
-canvas.focus_set()
-canvas.pack()
-
-for y in range(len(simple_map[0])):
-    for x in range(len(simple_map[y])):
-        if simple_map[y][x] == 1:
-            canvas.create_rectangle(x * 30,
-                                    y * 30,
-                                    x * 30 + 30,
-                                    y * 30 + 30,
-                                    fill="black")
-        # elif simple_map[y][x] == 0:
-        #     canvas.create_oval(x * 30,
-        #                        y * 30,
-        #                        x * 30 + 30,
-        #                        y * 30 + 30,
-        #                        fill="blue")
-root.mainloop()
-
 A = Agent()
 
 s = str_to_instruction()
-print("명령어 입력 :")
-str = input()
+# print("명령어 한줄 입력 :")
+# str = input()
+str = '''
+for i in range(4): s.MoveF()
+s.MoveR()
+A.set_ifMove('fb', 's.MoveR()')
+'''
 exec(str)  # 명령어를 입력받아서 파이썬 문법으로 변환
 
 A.list_of_instruction(s)
@@ -276,4 +284,6 @@ se.get_engine("sname").coupling_relation(None, "start", mat[0][0], "west")
 
 se.get_engine("sname").insert_external_event("start",
                                              A)  # 만들어진 명령어 리스트를 insert
+
 se.get_engine("sname").simulate()
+A.visualize(simple_map)
