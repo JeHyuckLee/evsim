@@ -20,6 +20,25 @@ import random
 from tkinter import *
 from tkinter import messagebox
 
+map = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+       [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+       [1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
+       [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1],
+       [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+       [1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1],
+       [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1],
+       [1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1],
+       [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1],
+       [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1],
+       [1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1],
+       [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1],
+       [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+       [1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1],
+       [1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+       [1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1],
+       [1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 3, 1],
+       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+
 
 class Gamemanager(BehaviorModelExecutor):
 
@@ -47,8 +66,8 @@ class Gamemanager(BehaviorModelExecutor):
             aX = msg_list[1]
             aY = msg_list[2]
             print(f"[Gm] cm:{self.cm} aX:{aX} aY:{aY}")
-            self.bool = self.cell_check(self.cm, aX,
-                                        aY)  #현재위치에서 가고자하는 셀을 갈수 있는지 여부를 판단.
+            self.bool = self.is_colide(self.cm, aX,
+                                       aY)  #현재위치에서 가고자하는 셀을 갈수 있는지 여부를 판단.
             self._cur_state = "MOVE"
 
     def output(self):
@@ -64,38 +83,80 @@ class Gamemanager(BehaviorModelExecutor):
         else:
             self._cur_state = "MOVE"
 
-    def make_map(self, i, j):  #맵 생성
-        self.Cell = []
-        for i in range(i):
-            c = []
-            for j in range(j):
-                c.append(random.choice([0, 0, 0]))
-            self.Cell.append(c)
-
-    def cell_check(self, cm, j, i):
+    def is_colide(self, cm, j, i):
         if cm == "R":
-            if self.Cell[j + 1][i] == 0:
+            if map[i][j + 1] == 1:
                 return True
             else:
                 return False
         elif cm == "L":
-            if self.Cell[j - 1][i] == 0:
+            if map[i][j - 1] == 1:
                 return True
             else:
                 return False
         elif cm == "F":
-            if self.Cell[j][i + 1] == 0:
+            if map[i + 1][j] == 1:
                 return True
             else:
                 return False
         elif cm == "B":
-            if self.Cell[j][i - 1] == 0:
+            if map[i - 1][j] == 1:
                 return True
             else:
                 return False
         else:
             print("Wrong command.")
             pass
+
+
+class visualize():
+
+    def __init__(self, x, y):
+        self.ix = x
+        self.iy = y
+        self.Cell = map
+
+    def visualize(self):
+        root = Tk()
+        root.title("미로 찾기 게임")
+        root.resizable(False, False)
+        # 창 너비, 높이, 위치 설정
+        width, height = 540, 540
+        x, y = (root.winfo_screenwidth() -
+                width) / 2, (root.winfo_screenheight() - height) / 2
+        root.geometry("%dx%d+%d+%d" % (width, height, x, y))
+        # canvas를 추가하고 키이벤트를 부착
+        self.canvas = Canvas(root, width=width, height=height, bg="white")
+        self.canvas.focus_set()
+        self.canvas.pack()
+        for y in range(len(self.Cell[0])):
+            for x in range(len(self.Cell[y])):
+                if self.Cell[y][x] == 1:
+                    self.canvas.create_rectangle(x * 30,
+                                                 y * 30,
+                                                 x * 30 + 30,
+                                                 y * 30 + 30,
+                                                 fill="black")
+                elif self.Cell[y][x] == 2:
+                    self.id = self.canvas.create_oval(x * 30,
+                                                      y * 30,
+                                                      x * 30 + 30,
+                                                      y * 30 + 30,
+                                                      fill="red")
+                elif self.Cell[y][x] == 3:
+                    self.canvas.create_oval(x * 30,
+                                            y * 30,
+                                            x * 30 + 30,
+                                            y * 30 + 30,
+                                            fill="blue")
+        root.mainloop()
+
+    def move(self, x, y):
+        self.nx = x
+        self.ny = y
+        self.canvas.move(self.id, (self.nx - self.ix) * 30,
+                         (self.ny - self.iy) * 30)
+        self.ix, self.iy = self.nx, self.ny
 
 
 class str_to_instruction():  # 문자열을 명령어로
@@ -136,7 +197,6 @@ class Agent(BehaviorModelExecutor):
 
         self.ix = ix
         self.iy = iy
-        self.blocked
 
     def ext_trans(self, port, msg):
         msg_list = []
@@ -146,6 +206,8 @@ class Agent(BehaviorModelExecutor):
             data = msg.retrieve()
             self.cm_list = data[0]
             print(f"[agent][in] cm_list :{self.cm_list} ")
+            # v = visualize(self.ix, self.iy)
+            # v.visualize()
             self._cur_state = "MOVE"
 
         elif port == "gm":  #게임매니져 에게 다음셀로 갈수있는지 여부를 받음
@@ -166,7 +228,7 @@ class Agent(BehaviorModelExecutor):
             msg.insert(Data)
             return msg
         if (self._cur_state == "OUT"):
-            if self.bool == True:
+            if self.bool == False:
                 self.move(self.cm)
                 print(f"[agent] move X: {self.ix} Y: {self.iy}\n")
             else:
@@ -183,7 +245,7 @@ class Agent(BehaviorModelExecutor):
             self.iy -= 1
 
     def int_trans(self):
-        if self._cur_state == "MOVE" or self._cur_state == "out":
+        if self._cur_state == "MOVE":
             self._cur_state = "IDLE"
         else:
             self._cur_state = "MOVE"
@@ -198,9 +260,8 @@ se.get_engine("sname").insert_input_port("start")
 
 gm = Gamemanager(0, Infinite, "gm", "sname")
 se.get_engine("sname").register_entity(gm)
-gm.make_map(10, 10)
 
-agent = Agent(0, Infinite, "agent", "sname", 0, 0)
+agent = Agent(0, Infinite, "agent", "sname", 2, 2)
 se.get_engine("sname").register_entity(agent)
 
 se.get_engine("sname").coupling_relation(None, "start", agent, "start")
@@ -208,7 +269,9 @@ se.get_engine("sname").coupling_relation(agent, "gm", gm, "agent")
 se.get_engine("sname").coupling_relation(gm, "agent", agent, "gm")
 
 s = str_to_instruction()
+
 for i in range(10):
     s.MoveF()
+
 se.get_engine("sname").insert_external_event("start", s.get_instruction())
 se.get_engine("sname").simulate()
