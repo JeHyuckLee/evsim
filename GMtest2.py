@@ -177,9 +177,13 @@ class Agent(BehaviorModelExecutor):
             if (self.map_data[cm] == 0):
                 self.move(cm)
                 print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
-            else:
-                print(f"[agent] can't go, move{self.blk_move}")
+            elif (self.map_data[cm] == 1):
+                print(f"[agent] can't go, move {self.blk_move}")
                 self.cm_list.insert(0, self.blk_move)
+            elif (self.map_data[cm] == 3):
+                self.move(cm)
+                print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
+                print("[agent] arrive!")
 
     def move(self, cm):
 
@@ -221,9 +225,10 @@ se.get_engine("sname").coupling_relation(gm, "agent", agent, "gm")
 
 Move = command_list()
 
-Move.Blk('R')
+Move.Blk('B')
 for i in range(10):
     Move.F()
+    Move.R()
 
 se.get_engine("sname").insert_external_event("command", Move.get_command())
 se.get_engine("sname").insert_external_event("blk", Move.get_blk())
