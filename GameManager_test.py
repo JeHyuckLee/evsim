@@ -39,6 +39,8 @@ map = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
        [1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 3, 1],
        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
+#게임활용의 수업, 운영
+
 
 class Gamemanager(BehaviorModelExecutor):
 
@@ -114,7 +116,7 @@ class visualize():
     def __init__(self, x, y):
         self.ix = x
         self.iy = y
-        self.Cell = map
+        map[self.ix][self.iy] = 2
 
     def visualize(self):
         root = Tk()
@@ -129,21 +131,22 @@ class visualize():
         self.canvas = Canvas(root, width=width, height=height, bg="white")
         self.canvas.focus_set()
         self.canvas.pack()
-        for y in range(len(self.Cell[0])):
-            for x in range(len(self.Cell[y])):
-                if self.Cell[y][x] == 1:
+
+        for y in range(len(map[0])):
+            for x in range(len(map[y])):
+                if map[y][x] == 1:
                     self.canvas.create_rectangle(x * 30,
                                                  y * 30,
                                                  x * 30 + 30,
                                                  y * 30 + 30,
                                                  fill="black")
-                elif self.Cell[y][x] == 2:
+                elif map[y][x] == 2:
                     self.id = self.canvas.create_oval(x * 30,
                                                       y * 30,
                                                       x * 30 + 30,
                                                       y * 30 + 30,
                                                       fill="red")
-                elif self.Cell[y][x] == 3:
+                elif map[y][x] == 3:
                     self.canvas.create_oval(x * 30,
                                             y * 30,
                                             x * 30 + 30,
@@ -206,8 +209,9 @@ class Agent(BehaviorModelExecutor):
             data = msg.retrieve()
             self.cm_list = data[0]
             print(f"[agent][in] cm_list :{self.cm_list} ")
-            # v = visualize(self.ix, self.iy)
-            # v.visualize()
+            #시각화
+            # self.v = visualize(self.ix, self.iy)
+            # self.v.visualize()
             self._cur_state = "MOVE"
 
         elif port == "gm":  #게임매니져 에게 다음셀로 갈수있는지 여부를 받음
@@ -237,12 +241,16 @@ class Agent(BehaviorModelExecutor):
     def move(self, cm):
         if (cm == "R"):
             self.ix += 1
+            self.move(self.ix, self.iy)
         elif (cm == "L"):
             self.ix -= 1
+            self.move(self.ix, self.iy)
         elif (cm == "F"):
             self.iy += 1
+            self.move(self.ix, self.iy)
         elif (cm == "B"):
             self.iy -= 1
+            self.move(self.ix, self.iy)
 
     def int_trans(self):
         if self._cur_state == "MOVE":

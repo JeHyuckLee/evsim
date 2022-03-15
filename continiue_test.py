@@ -6,13 +6,14 @@ import datetime
 
 
 class Generator(BehaviorModelExecutor):  # 오토마타 구현
+
     def __init__(self, instance_time, destruct_time, name, engine_name):
-        BehaviorModelExecutor.__init__(
-            self, instance_time, destruct_time, name, engine_name)
+        BehaviorModelExecutor.__init__(self, instance_time, destruct_time,
+                                       name, engine_name)
 
         self.init_state("IDLE")  # IDLE 상태
         self.insert_state("IDLE", Infinite)  # 대기 무한정 외부에서 입력을 받아야 상태가 변함
-        self.insert_state("MOVE", 1)   # MOVE상태, 1초동안 기다린후 이벤트가 없으면
+        self.insert_state("MOVE", 0)  # MOVE상태, 1초동안 기다린후 이벤트가 없으면
 
         self.insert_input_port("start")  # 인풋 포트
         self.insert_output_port("process")  # 아우풋 포트
@@ -23,7 +24,9 @@ class Generator(BehaviorModelExecutor):  # 오토마타 구현
             print(f"[Gen][IN]: {datetime.datetime.now()}")
             self._cur_state = "MOVE"  # start를 받으면 1초단위로 move 라는 상태를 반복
 
-    def output(self):  # 메세지를 보냄, 프로세스를 지정, 프로세스포트와 연결된 에이전트는 전부 메세지를 받는다. 게임을 만드는 사람은 누가 메세지를받을지 포트를 지정
+    def output(
+        self
+    ):  # 메세지를 보냄, 프로세스를 지정, 프로세스포트와 연결된 에이전트는 전부 메세지를 받는다. 게임을 만드는 사람은 누가 메세지를받을지 포트를 지정
         msg = SysMessage(self.get_name(), "process")  # MOVE - 1초주기로 메세지를 보냄
         print(f"[Gen][OUT]: {datetime.datetime.now()}")
         msg.insert(self.msg_list.pop(0))  # 메세지 리스트에서 하나를 뽑아서 보낸다.
@@ -37,13 +40,14 @@ class Generator(BehaviorModelExecutor):  # 오토마타 구현
 
 
 class Processor(BehaviorModelExecutor):
+
     def __init__(self, instance_time, destruct_time, name, engine_name):
-        BehaviorModelExecutor.__init__(
-            self, instance_time, destruct_time, name, engine_name)
+        BehaviorModelExecutor.__init__(self, instance_time, destruct_time,
+                                       name, engine_name)
 
         self.init_state("IDLE")
         self.insert_state("IDLE", Infinite)  # IDLE상태 대기 무한
-        self.insert_state("PROCESS", 2)  # Process 상태, 2초 대기
+        self.insert_state("PROCESS", 0)  # Process 상태, 2초 대기
 
         self.insert_input_port("process")
 
@@ -73,7 +77,7 @@ class Processor(BehaviorModelExecutor):
 se = SystemSimulator()  # 백엔드 생성(메안서버 )
 
 # 로비에서 방하나만든다..? REAL_TIME => 사람의 1초 = 컴퓨터의 1초
-se.register_engine("sname", "REAL_TIME", 1)
+se.register_engine("sname", "VIRTURE_TIME", 0)
 # 버츄어타임 => 시간개념 x 우선순위 부여라는 느낌,   1=> time resolution 시간을 얼마나 잘게 볼것이냐  1= 1초마다 이벤트 유뮤를 확인
 # input_port("start) => 포트라는 개념, API를 String 형태로 정의..?
 se.get_engine("sname").insert_input_port("start")
@@ -82,13 +86,14 @@ se.get_engine("sname").insert_input_port("start")
 gen = Generator(0, Infinite, "Gen", "sname")
 se.get_engine("sname").register_entity(gen)  # register_entity 에이전트 추가
 
-proc = Processor(0, Infinite, "Proc", "sname")
-se.get_engine("sname").register_entity(proc)  # 에이전트 추가
+se.get_engine("sname").coupling_relation(
+    None, "start", gen, "start")  # 방(start라는 포트와 )과 gen 의 start 연결
 
-se.get_engine("sname").coupling_relation(None, "start", gen,
-                                         "start")  # 방(start라는 포트와 )과 gen 의 start 연결
-se.get_engine("sname").coupling_relation(gen, "process",
-                                         proc, "process")  # 에이전트 간의 상호작용..? 입출력 연결
+for i in range(1000):
+    i = Processor(0, Infinite, "Proc", "sname")
+    se.get_engine("sname").register_entity(i)  # 에이전트 추가
+    se.get_engine("sname").coupling_relation(
+        gen, "process", i, "process")  # 에이전트 간의 상호작용..? 입출력 연결
 
 se.get_engine("sname").insert_external_event("start", None)  # 외부에서 이벤트를 꽂아줌
 se.get_engine("sname").simulate()  # 게임시작
