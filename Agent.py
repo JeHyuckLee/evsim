@@ -23,6 +23,8 @@ class Agent(BehaviorModelExecutor):
         self.ix = ix
         self.iy = iy
 
+        self.flag = ''
+
     def ext_trans(self, port, msg):
         msg_list = []
         if port == "command":  #명령어 리스트를 입력받음
@@ -56,8 +58,9 @@ class Agent(BehaviorModelExecutor):
                 self.move(cm)
                 print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
             elif (self.map_data[cm] == 1):
-                print(f"[agent] can't go, move {self.blk_move}")
+                print(f"[agent] can't go")
                 self.flag = cm
+                print(f"[agent] ifmove")
                 self.Ifmove()
             elif (self.map_data[cm] == 3):
                 self.move(cm)
@@ -78,11 +81,11 @@ class Agent(BehaviorModelExecutor):
         if self.flag == 'R':
             self.move(self.rblk_move)
         elif self.flag == 'L':
-            self.move(self.rblk_move)
+            self.move(self.lblk_move)
         elif self.flag == 'F':
-            self.move(self.rblk_move)
+            self.move(self.fblk_move)
         elif self.flag == 'B':
-            self.move(self.rblk_move) 
+            self.move(self.bblk_move) 
 
     def move(self, cm):
 

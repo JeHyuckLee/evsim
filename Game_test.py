@@ -19,6 +19,11 @@ class command_list():  # 문자열을 명령어로
     def __init__(self):
         self.cm_list = list()
 
+        self.rblk_cm = ''
+        self.lblk_cm = ''
+        self.fblk_cm = ''
+        self.bblk_cm = ''
+
     def R(self):
         self.cm_list.append('R')
 
@@ -79,11 +84,21 @@ Move = command_list()
 
 # 명령어 파트 시작
 
-Move.Blk('R', 'F')
+Move.Blk('F', 'R')
 for i in range(10):
     Move.F()
 
 # 끝
+
+if Move.get_blk('R') != None:
+    agent.Set_Ifmove('R', Move.get_blk('R'))
+if Move.get_blk('L') != None:
+    agent.Set_Ifmove('L', Move.get_blk('L'))
+if Move.get_blk('F') != None:
+    agent.Set_Ifmove('F', Move.get_blk('F'))
+if Move.get_blk('B') != None:
+    agent.Set_Ifmove('B', Move.get_blk('B'))
+
 
 se.get_engine("sname").insert_external_event("command", Move.get_command())
 se.get_engine("sname").simulate()
