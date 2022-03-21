@@ -22,6 +22,8 @@ map = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
        [1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 3, 1],
        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
+#왼쪽 상단 부터 (0,0)  F: 아래쪽 , R:오른쪽, B:위쪽, L : 왼쪽
+
 
 class Gamemanager(BehaviorModelExecutor):
 
@@ -52,7 +54,8 @@ class Gamemanager(BehaviorModelExecutor):
             self._cur_state = "MOVE"
 
     def output(self):
-        msg = SysMessage(self.get_name, "agent")  #에이전트에게 갈수있는지 없는지 알려줌
+        msg = SysMessage(self.get_name,
+                         "agent")  #에이전트의 현재 위치를 기준으로 상하좌우 의 맵데이터를 보낸다
         msg.insert(self.Data)
         print(f"[Gm][out]{self.Data}")
         return msg
@@ -66,9 +69,9 @@ class Gamemanager(BehaviorModelExecutor):
     def map_data(self, j, i):
 
         map_data = {
-            'R': map[i + 1][j],
-            'L': map[i - 1][j],
-            'F': map[i][j + 1],
-            'B': map[i][j + 1]
+            'R': map[i][j + 1],
+            'L': map[i][j - 1],
+            'F': map[i + 1][j],
+            'B': map[i - 1][j]
         }
         return map_data
