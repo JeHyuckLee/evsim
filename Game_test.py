@@ -66,12 +66,11 @@ se = SystemSimulator()
 se.register_engine("sname", "REAL_TIME", 1)
 
 se.get_engine("sname").insert_input_port("command")
-se.get_engine("sname").insert_input_port("blk")
 
 gm = Gamemanager(0, Infinite, "gm", "sname")
 se.get_engine("sname").register_entity(gm)
 
-agent = Agent(0, Infinite, "agent", "sname", 1, 1)
+agent = Agent(0, Infinite, "agent", "sname", 1, 1)  #에이전트의 시작위치 지정
 se.get_engine("sname").register_entity(agent)
 
 se.get_engine("sname").coupling_relation(None, "command", agent, "command")

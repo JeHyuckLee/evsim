@@ -15,10 +15,10 @@ class Agent(BehaviorModelExecutor):
         self.insert_state("IDLE", Infinite)
         self.insert_state("MOVE", 1)
         self.insert_state("OUT", 1)
+        self.insert_state("END", Infinite)
         self.insert_input_port("agent")
         self.insert_output_port("gm")
         self.insert_input_port("command")
-        self.insert_input_port("blk")
 
         self.ix = ix
         self.iy = iy
@@ -35,7 +35,7 @@ class Agent(BehaviorModelExecutor):
             print(f"[agent][in] cm_list :{self.cm_list} ")
             self._cur_state = "MOVE"
 
-        elif port == "gm":  #게임매니져 에게 다음셀로 갈수있는지 여부를 받음
+        elif port == "gm":  #게임매니져 에게 맵 정보를 받는다.
             print("[agent][in]")
             self.cancel_rescheduling()
             data = msg.retrieve()
@@ -51,21 +51,24 @@ class Agent(BehaviorModelExecutor):
             msg.insert(Data)
             return msg
 
-        if (self._cur_state == "OUT"):
-            cm = self.cm_list.pop(0)
-            print(f"[agent] [cm] = {cm}, [rest cmlist] = {self.cm_list}")
-            if (self.map_data[cm] == 0):
-                self.move(cm)
-                print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
-            elif (self.map_data[cm] == 1):
-                print(f"[agent] can't go")
-                self.flag = cm
-                print(f"[agent] ifmove")
-                self.Ifmove()
-            elif (self.map_data[cm] == 3):
-                self.move(cm)
-                print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
-                print("[agent] arrive!")
+        if (self._cur_state == "OUT"):  #맵 데이터를 통해 다음 위치로 갈수있는지 여부를 판단한다.
+            if not self.cm_list:
+                self._cur_state = "END"
+            else:
+                cm = self.cm_list.pop(0)
+                print(f"[agent] [cm] = {cm}, [rest cmlist] = {self.cm_list}")
+                if (self.map_data[cm] == 0):
+                    self.move(cm)
+                    print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
+                elif (self.map_data[cm] == 1):
+                    print(f"[agent] can't go")
+                    self.flag = cm
+                    print(f"[agent] ifmove")
+                    self.Ifmove()
+                elif (self.map_data[cm] == 3):
+                    self.move(cm)
+                    print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
+                    print("[agent] arrive!")
 
     def Set_Ifmove(self, blk, cm):
         if blk == 'R':
@@ -101,5 +104,7 @@ class Agent(BehaviorModelExecutor):
     def int_trans(self):
         if self._cur_state == "MOVE":
             self._cur_state = "IDLE"
+        elif self._cur_state == "END":
+            print("Game End")
         else:
             self._cur_state = "MOVE"
