@@ -23,6 +23,8 @@ class Agent(BehaviorModelExecutor):
         self.ix = ix
         self.iy = iy
 
+        self.flag = ''
+
     def ext_trans(self, port, msg):
         msg_list = []
         if port == "command":  #명령어 리스트를 입력받음
@@ -31,13 +33,6 @@ class Agent(BehaviorModelExecutor):
             data = msg.retrieve()
             self.cm_list = data[0]
             print(f"[agent][in] cm_list :{self.cm_list} ")
-            self._cur_state = "MOVE"
-
-        elif port == "blk":
-            self.cancel_rescheduling()
-            data = msg.retrieve()
-            msg_list = data[0]
-            self.blk_move = msg_list
             self._cur_state = "MOVE"
 
         elif port == "gm":  #게임매니져 에게 다음셀로 갈수있는지 여부를 받음
@@ -63,12 +58,34 @@ class Agent(BehaviorModelExecutor):
                 self.move(cm)
                 print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
             elif (self.map_data[cm] == 1):
-                print(f"[agent] can't go, move {self.blk_move}")
-                self.cm_list.insert(0, self.blk_move)
+                print(f"[agent] can't go")
+                self.flag = cm
+                print(f"[agent] ifmove")
+                self.Ifmove()
             elif (self.map_data[cm] == 3):
                 self.move(cm)
                 print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
                 print("[agent] arrive!")
+
+    def Set_Ifmove(self, blk, cm):
+        if blk == 'R':
+            self.rblk_move = cm
+        elif blk == 'L':
+            self.lblk_move = cm
+        elif blk == 'F':
+            self.fblk_move = cm
+        elif blk == 'B':
+            self.bblk_move = cm
+
+    def Ifmove(self):
+        if self.flag == 'R':
+            self.move(self.rblk_move)
+        elif self.flag == 'L':
+            self.move(self.lblk_move)
+        elif self.flag == 'F':
+            self.move(self.fblk_move)
+        elif self.flag == 'B':
+            self.move(self.bblk_move)
 
     def move(self, cm):
 
