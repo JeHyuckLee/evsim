@@ -75,17 +75,17 @@ class Agent(BehaviorModelExecutor):
         elif blk == 'F':
             self.fblk_move = cm
         elif blk == 'B':
-            self.bblk_move = cm 
+            self.bblk_move = cm
     
     def Ifmove(self):
         if self.flag == 'R':
-            self.move(self.rblk_move)
+            self.cm_list.insert(0, self.rblk_move)
         elif self.flag == 'L':
-            self.move(self.lblk_move)
+            self.cm_list.insert(0, self.lblk_move)
         elif self.flag == 'F':
-            self.move(self.fblk_move)
+            self.cm_list.insert(0, self.fblk_move)
         elif self.flag == 'B':
-            self.move(self.bblk_move) 
+            self.cm_list.insert(0, self.bblk_move)
 
     def move(self, cm):
 
