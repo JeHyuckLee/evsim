@@ -43,7 +43,7 @@ class Gamemanager(BehaviorModelExecutor):
     def ext_trans(self, port, msg):
         msg_list = []
         if port == "agent":  #에이전트에게 명령어 와 현재 위치를 받는다.
-            print(f"[Gm][in] instruction received")
+            print(f"[Gm][in] received")
             self.cancel_rescheduling()
             data = msg.retrieve()
             msg_list = data[0]
