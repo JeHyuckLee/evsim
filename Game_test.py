@@ -1,17 +1,15 @@
-from cmath import sqrt
-from concurrent.futures.process import _check_system_limits
-from dis import Instruction
-from doctest import FAIL_FAST
-from msilib.schema import SelfReg
-
-from system_simulator import SystemSimulator
+from re import T
 from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
+from system_simulator import SystemSimulator
 from Agent import *
 from Game_manager import *
+from tkinter import *
+from tkinter import messagebox
 
-#게임활용의 수업, 운영
+# IDLE 상태에서 대기하다가 ext_trans 에서 이벤트를 받음  이벤트를 받은후 cur_state를 변경하고 output으로 이동 output 에서 처리가 끝나면 int_trans 를 통해 다시 cur_state를 조절
+# cur_state가 다시 IDLE이 되면 이벤트를 받을때 까지 대기 , 다른 state로 바뀌면 다시 output으로 이동 해서 처리
 
 
 class command_list():  # 문자열을 명령어로
@@ -44,7 +42,7 @@ class command_list():  # 문자열을 명령어로
         elif blk == 'F':
             self.fblk_cm = cm
         elif blk == 'B':
-            self.bblk_cm = cm 
+            self.bblk_cm = cm
 
     def get_blk(self, blk):
         if blk == 'R':
@@ -55,36 +53,42 @@ class command_list():  # 문자열을 명령어로
             return self.fblk_cm
         elif blk == 'B':
             return self.bblk_cm
-        
 
     def get_command(self):  # 만들어진 명령어 리스트를 반환한다.
         return self.cm_list
 
 
 # System Simulator Initialization
+
 se = SystemSimulator()
 
-se.register_engine("sname", "REAL_TIME", 1)
+se.register_engine("sname", "REAL_TIME", 0.01)
+se.get_engine("sname").insert_input_port("nonblock")
 
-se.get_engine("sname").insert_input_port("command")
-se.get_engine("sname").insert_input_port("blk")
+se.register_engine("sname2", "REAL_TIME", 0.01)
+
+se.get_engine("sname2").insert_input_port("command")
+se.get_engine("sname2").insert_input_port("test")
 
 gm = Gamemanager(0, Infinite, "gm", "sname")
-se.get_engine("sname").register_entity(gm)
+se.get_engine("sname2").register_entity(gm)
 
-agent = Agent(0, Infinite, "agent", "sname", 1, 1)
-se.get_engine("sname").register_entity(agent)
+agent = Agent(0, Infinite, "agent", "sname", 1, 1)  #에이전트의 시작위치 지정
+se.get_engine("sname2").register_entity(agent)
 
-se.get_engine("sname").coupling_relation(None, "command", agent, "command")
+se.get_engine("sname2").coupling_relation(None, "command", agent, "command")
 
-se.get_engine("sname").coupling_relation(agent, "gm", gm, "agent")
-se.get_engine("sname").coupling_relation(gm, "agent", agent, "gm")
+se.get_engine("sname2").coupling_relation(None, "test", agent, "test")
+
+se.get_engine("sname2").coupling_relation(agent, "gm", gm, "agent")
+se.get_engine("sname2").coupling_relation(gm, "agent", agent, "gm")
 
 Move = command_list()
 
 # 명령어 파트 시작
 
 Move.Blk('F', 'R')
+Move.Blk('R', 'L')
 for i in range(10):
     Move.F()
 
@@ -99,6 +103,7 @@ if Move.get_blk('F') != None:
 if Move.get_blk('B') != None:
     agent.Set_Ifmove('B', Move.get_blk('B'))
 
-
-se.get_engine("sname").insert_external_event("command", Move.get_command())
-se.get_engine("sname").simulate()
+#se.get_engine("sname").simulate()
+print("DD")
+se.exec_non_block_simulate(["sname", "sname2"])
+se.get_engine("sname2").insert_external_event("command", Move.get_command())
