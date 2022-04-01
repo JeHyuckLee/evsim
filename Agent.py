@@ -29,9 +29,6 @@ class Agent(BehaviorModelExecutor):
         self.blk_flag = False
         self.flag = ''
 
-        # t = thread(target=self.visualize(ix, iy), args=())
-        # t.start()
-
     def ext_trans(self, port, msg):
         msg_list = []
         print(f"exttrans {self.get_cur_state()}")
@@ -68,9 +65,6 @@ class Agent(BehaviorModelExecutor):
                 print(f"[agent] [cm] = {cm}, [rest cmlist] = {self.cm_list}")
                 if (self.map_data[cm] == 0):  #장애물이 없는경우
                     self.move(cm)
-                    # self.canvas.move(self.id, (self.nx - self.x) * 30,
-                    #                  (self.ny - self.y) * 30)
-                    self.ix, self.iy = self.nx, self.ny
                     print(f"[agent] move X:{self.ix},Y:{self.iy}\n")
 
                 elif (self.map_data[cm] == 1):  #장애물을 만난경우
@@ -111,13 +105,13 @@ class Agent(BehaviorModelExecutor):
     def move(self, cm):
 
         if (cm == "R"):
-            self.x += 1
+            self.ix += 1
         elif (cm == "L"):
-            self.x -= 1
+            self.ix -= 1
         elif (cm == "F"):
-            self.y += 1
+            self.iy += 1
         elif (cm == "B"):
-            self.y -= 1
+            self.iy -= 1
 
     def int_trans(self):
         print(f"int trans {self.get_cur_state()}")
