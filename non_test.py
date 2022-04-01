@@ -5,8 +5,6 @@ from definition import *
 from system_simulator import SystemSimulator
 from Agent import *
 from Game_manager import *
-from tkinter import *
-from tkinter import messagebox
 
 # IDLE 상태에서 대기하다가 ext_trans 에서 이벤트를 받음  이벤트를 받은후 cur_state를 변경하고 output으로 이동 output 에서 처리가 끝나면 int_trans 를 통해 다시 cur_state를 조절
 # cur_state가 다시 IDLE이 되면 이벤트를 받을때 까지 대기 , 다른 state로 바뀌면 다시 output으로 이동 해서 처리
