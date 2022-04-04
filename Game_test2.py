@@ -17,10 +17,10 @@ class command_list():  # 문자열을 명령어로
     def __init__(self):
         self.cm_list = list()
 
-        self.rblk_cm = ''
-        self.lblk_cm = ''
-        self.fblk_cm = ''
-        self.bblk_cm = ''
+        self.rblk_cm = None
+        self.lblk_cm = None
+        self.fblk_cm = None
+        self.bblk_cm = None
 
     def R(self):
         self.cm_list.append('R')

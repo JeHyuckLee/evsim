@@ -24,6 +24,9 @@ class BehaviorModel(CoreModel):
         # Duplicated State
         self._states[name] = float(deadline)
 
+#포팅안해도됨
+
+
     def retrieve_states(self):
         return self._states
 
