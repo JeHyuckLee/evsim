@@ -34,7 +34,7 @@ class Gamemanager(BehaviorModelExecutor):
         self.set_name(engine_name)
         self.init_state("IDLE")
         self.insert_state("IDLE", Infinite)
-        self.insert_state("MOVE", 1)
+        self.insert_state("SEND", 0.01)
 
         self.insert_input_port("agent")
 
@@ -51,7 +51,7 @@ class Gamemanager(BehaviorModelExecutor):
             aY = msg_list[1]
             print(f"[Gm] aX:{aX} aY:{aY}")
             self.Data = self.map_data(aX, aY)
-            self._cur_state = "MOVE"
+            self._cur_state = "SEND"
 
     def output(self):
         msg = SysMessage(self.get_name,
@@ -61,10 +61,10 @@ class Gamemanager(BehaviorModelExecutor):
         return msg
 
     def int_trans(self):
-        if self._cur_state == "MOVE":
+        if self._cur_state == "SEND":
             self._cur_state = "IDLE"
         else:
-            self._cur_state = "MOVE"
+            self._cur_state = "SEND"
 
     def map_data(self, j, i):
 
