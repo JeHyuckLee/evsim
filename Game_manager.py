@@ -34,7 +34,7 @@ class Gamemanager(BehaviorModelExecutor):
         self.set_name(engine_name)
         self.init_state("IDLE")
         self.insert_state("IDLE", Infinite)
-        self.insert_state("SEND", 0.01)
+        self.insert_state("SEND", 1)
 
         self.insert_input_port("agent")
 

@@ -2,6 +2,7 @@ from enum import Enum
 
 # TODO-01 Define Error Type or Exception cbchoi
 Infinite = float("inf")  # hug value
+#이게뭐지
 
 
 class AttributeType(Enum):
@@ -63,14 +64,8 @@ class CoreModel(object):
     def set_name(self, _name):
         self._name = _name
 
-    def set_blocked(self, blocked):
-        self.blocked = blocked
-
-    def get_blocked(self):
-        return self.blocked
-
     def get_name(self):
-        return self._name
+        return self._name   
 
     def insert_input_port(self, port):
         self._input_ports.append(port)

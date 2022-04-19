@@ -294,57 +294,6 @@ class SysExecutor(SysObject, BehaviorModel):
 
         tuple_obj = self.min_schedule_item.popleft()
 
-        before = time.perf_counter()  # TODO: consider decorator
-
-        while math.isclose(tuple_obj.get_req_time(),
-                           self.global_time,
-                           rel_tol=1e-9):
-            msg = tuple_obj.output()
-            if msg is not None:
-                self.output_handling(tuple_obj, (self.global_time, msg))
-
-            # Sender Scheduling
-            tuple_obj.int_trans()
-            req_t = tuple_obj.get_req_time()
-
-            tuple_obj.set_req_time(req_t)
-            self.min_schedule_item.append(tuple_obj)
-
-            self.min_schedule_item = deque(
-                sorted(self.min_schedule_item,
-                       key=lambda bm: bm.get_req_time()))
-
-            tuple_obj = self.min_schedule_item.popleft()
-
-        self.min_schedule_item.appendleft(tuple_obj)
-
-        after = time.perf_counter()
-        if self.sim_mode == "REAL_TIME":
-            time.sleep((lambda x: x if x > 0 else 0)(float(self.time_step) -
-                                                     float(after - before)))
-
-        # update Global Time
-        self.global_time += self.time_step
-
-        # Agent Deletion
-        self.destroy_entity()
-
-    def simulate(self, _time=Infinite):
-        # Termination Condition
-        self.target_time = self.global_time + _time
-
-        # Get minimum scheduled event
-        self.init_sim()
-
-        while self.global_time < self.target_time:
-            if not self.waiting_obj_map:
-                if self.min_schedule_item[0].get_req_time(
-                ) == Infinite and self.sim_mode == 'VIRTUAL_TIME':
-                    self.simulation_mode = SimulationMode.SIMULATION_TERMINATED
-                    break
-
-            self.schedule()
-
     def simulation_stop(self):
         self.global_time = 0
         self.target_time = 0
@@ -376,7 +325,7 @@ class SysExecutor(SysObject, BehaviorModel):
             heapq.heappush(self.input_event_queue,
                            (scheduled_time + self.global_time, sm))
             self.lock.release()
-            #if self.simulation_mode != SimulationMode.SIMULATION_IDLE and self.input_event_queue:
+            #if self.simulation_mode != SimulationMode.SIM  ULATION_IDLE and self.input_event_queue:
             #    self.handle_external_input_event()
         else:
             # TODO Exception Handling

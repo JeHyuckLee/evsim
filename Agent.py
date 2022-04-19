@@ -16,8 +16,8 @@ class Agent(BehaviorModelExecutor):
 
         self.init_state("IDLE")
         self.insert_state("IDLE", Infinite)
-        self.insert_state("SEND", 0.01)
-        self.insert_state("MOVE", 0.01)
+        self.insert_state("SEND", 1)
+        self.insert_state("MOVE", 1)
         self.insert_state("END", Infinite)
         self.insert_input_port("agent")
         self.insert_output_port("gm")
