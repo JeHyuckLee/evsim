@@ -9,7 +9,6 @@ from system_simulator import SystemSimulator
 from Game_manager import *
 from command_list import *
 
-Move = command_list()
 
 class Bot():
     updater = Updater( token='5270412803:AAHU6RCPczvA_lBW1lgiVvFKcZiSABysGvs', use_context=True ) #자신의 봇 토큰 
@@ -45,9 +44,6 @@ class Bot():
         user = context.args[0]
         chat_id = update.effective_chat.id
         exec("{} = command_list()".format(user),globals())
-
-        global Move2
-        Move2 = command_list()
         if user in self.agents.keys() : 
             if chat_id not in self.agents[user].chat_id : 
                 self.agents[user].chat_id.append(chat_id)
@@ -121,14 +117,14 @@ class Bot():
             simulator.get_engine("sname").coupling_relation(agent, "gm", self.gm, "agent")
             simulator.get_engine("sname").coupling_relation(self.gm, "agent", agent, "gm")
 
-            if Move.get_blk('R') != None:
-                agent.Set_Ifmove('R', Move.get_blk('R'))
-            if Move.get_blk('L') != None:
-                agent.Set_Ifmove('L', Move.get_blk('L'))
-            if Move.get_blk('F') != None:
-                agent.Set_Ifmove('F', Move.get_blk('F'))
-            if Move.get_blk('B') != None:
-                agent.Set_Ifmove('B', Move.get_blk('B'))
+            if globals()[user].get_blk('R') != None:
+                agent.Set_Ifmove('R', globals()[user].get_blk('R'))
+            if globals()[user].get_blk('L') != None:
+                agent.Set_Ifmove('L', globals()[user].get_blk('L'))
+            if globals()[user].get_blk('F') != None:
+                agent.Set_Ifmove('F', globals()[user].get_blk('F'))
+            if globals()[user].get_blk('B') != None:
+                agent.Set_Ifmove('B', globals()[user].get_blk('B'))
             
             exec("command = {}.get_command()".format(user),None,locals())
             context.bot.send_message(chat_id=update.effective_chat.id, text="이동을 시작합니다.")
