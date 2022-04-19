@@ -7,14 +7,17 @@ class SystemSimulator(object):
     _engine = {}
 
     @staticmethod
+    #이름, 모드(리얼, 가상), 스탭을 받아 SysExecutor객체 생성해 engine딕셔너리에 등록
     def register_engine(sim_name, sim_mode='VIRTUAL_TIME', time_step=1):
         SystemSimulator._engine[sim_name] = SysExecutor(
             time_step, sim_name, sim_mode)
 
+    #등록해놓은 엔진 목록 반환
     @staticmethod
     def get_engine_map():
         return SystemSimulator._engine
 
+    #등록해놓은 엔진 목록 중 이름을 지정하여 가져옴 
     @staticmethod
     def get_engine(sim_name):
         return SystemSimulator._engine[sim_name]

@@ -22,8 +22,8 @@ import math
 
 class SysExecutor(SysObject, BehaviorModel):
 
-    EXTERNAL_SRC = "SRC"
-    EXTERNAL_DST = "DST"
+    EXTERNAL_SRC = "SRC" #Source
+    EXTERNAL_DST = "DST" #Destination
 
     def __init__(self, _time_step, _sim_name='default', _sim_mode='VIRTUAL_TIME'):
         BehaviorModel.__init__(self, _sim_name)
@@ -68,11 +68,15 @@ class SysExecutor(SysObject, BehaviorModel):
     def get_global_time(self):
         return self.global_time
 
+    #entity : gm, agent와 같이 독립체(behavior_model을 기반으로 함)
+    #map에 entity를 등록하는 함수 
     def register_entity(self, sim_obj):
         # print((sim_obj,))
+        #해당 entity가 map에 등록되지 않으면 이를 저장할 리스트를 생성
         if not sim_obj.get_create_time() in self.waiting_obj_map:
             self.waiting_obj_map[sim_obj.get_create_time()] = list()
 
+        #생성된 시간을 기반으로 entity 등록
         self.waiting_obj_map[sim_obj.get_create_time()].append(sim_obj)
 
     def create_entity(self):
@@ -92,6 +96,7 @@ class SysExecutor(SysObject, BehaviorModel):
                 self.min_schedule_item = deque(
                     sorted(self.min_schedule_item, key=lambda bm: bm.get_req_time()))
 
+    #등록된 entity를 제거(모든 항목)
     def destroy_entity(self):
         if len(self.active_obj_map.keys()) != 0:
             delete_lst = []
@@ -114,6 +119,7 @@ class SysExecutor(SysObject, BehaviorModel):
                     del(self.port_map[key])
                 self.min_schedule_item.remove(agent)
 
+    #entity간에 파이프라인을 형성(출발점, 출구, 도착점, 입구)
     def coupling_relation(self, src_obj, out_port, dst_obj, in_port):
         if (src_obj, out_port) in self.port_map:
             self.port_map[(src_obj, out_port)].append((dst_obj, in_port))
@@ -331,7 +337,6 @@ class SysExecutor(SysObject, BehaviorModel):
                 if self.min_schedule_item[0].get_req_time() == Infinite and self.sim_mode == 'VIRTUAL_TIME':
                     self.simulation_mode = SimulationMode.SIMULATION_TERMINATED
                     break
-
             self.schedule()
 
     def simulation_stop(self):

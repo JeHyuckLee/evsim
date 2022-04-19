@@ -12,6 +12,8 @@ class BehaviorModel(CoreModel):
         self.internal_transition_map_tuple = {}
         self.internal_transition_map_state = {}
 
+
+    #state 등록
     def insert_state(self, name, deadline="inf"):
         # TODO: Exception Handling
         # TA < 0

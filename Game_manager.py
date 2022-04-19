@@ -1,7 +1,6 @@
 from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
-from system_simulator import SystemSimulator
 
 map = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
        [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
