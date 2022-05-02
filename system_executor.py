@@ -294,7 +294,7 @@ class SysExecutor(SysObject, BehaviorModel):
             # Sender Scheduling
             tuple_obj.int_trans()
             req_t = tuple_obj.get_req_time()
-
+            print(req_t)
             tuple_obj.set_req_time(req_t)
             self.min_schedule_item.append(tuple_obj)
 
