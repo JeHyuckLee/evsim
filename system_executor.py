@@ -151,11 +151,9 @@ class SysExecutor(SysObject, BehaviorModel):
 
     def single_output_handling(self, obj, msg):
         pair = (obj, msg[1].get_dst())
-
         if pair not in self.port_map:
             self.port_map[pair] = [
                 (self.active_obj_map[self.dmc.get_obj_id()], "uncaught")]
-
         for port_pair in self.port_map[pair]:
             destination = port_pair
             if destination is None:
@@ -286,7 +284,6 @@ class SysExecutor(SysObject, BehaviorModel):
         self.handle_external_input_event()
 
         tuple_obj = self.min_schedule_item.popleft()
-
         before = time.perf_counter()  # TODO: consider decorator
 
         while math.isclose(tuple_obj.get_req_time(), self.global_time, rel_tol=1e-9):
@@ -305,7 +302,6 @@ class SysExecutor(SysObject, BehaviorModel):
                 sorted(self.min_schedule_item, key=lambda bm: bm.get_req_time()))
 
             tuple_obj = self.min_schedule_item.popleft()
-
         self.min_schedule_item.appendleft(tuple_obj)
 
         after = time.perf_counter()

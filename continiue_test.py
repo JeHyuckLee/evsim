@@ -39,7 +39,7 @@ class Processor(BehaviorModelExecutor):
 
         self.init_state("IDLE")
         self.insert_state("IDLE", Infinite)  #IDLE상태 대기 무한
-        self.insert_state("PROCESS", 2) # Process 상태, 2초 대기
+        self.insert_state("PROCESS", 1) # Process 상태, 2초 대기
 
         self.insert_input_port("process")
 
