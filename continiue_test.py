@@ -56,6 +56,10 @@ class Processor(BehaviorModelExecutor):
     def output(self): #지금까지 받은것을 출력
         print(f"[Proc][OUT]: {datetime.datetime.now()}")
         print("|".join(map(str, self.msg_list)))
+        end = datetime.datetime.now()
+        time = end - start
+        print(time)
+
         return None
         
 
@@ -68,7 +72,9 @@ class Processor(BehaviorModelExecutor):
 # System Simulator Initialization
 se = SystemSimulator() #백엔드 생성(메안서버 )
 
-se.register_engine("sname", "REAL_TIME", 1) #로비에서 방하나만든다..? REAL_TIME => 사람의 1초 = 컴퓨터의 1초
+start = datetime.datetime.now()
+
+se.register_engine("sname", "VIRTURE_TIME", 1) #로비에서 방하나만든다..? REAL_TIME => 사람의 1초 = 컴퓨터의 1초
 #버츄어타임 => 시간개념 x 우선순위 부여라는 느낌,   1=> time resolution 시간을 얼마나 잘게 볼것이냐  1= 1초마다 이벤트 유뮤를 확인
 se.get_engine("sname").insert_input_port("start")# input_port("start) => 포트라는 개념, API를 String 형태로 정의..? 
 
