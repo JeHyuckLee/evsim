@@ -1,4 +1,7 @@
+from dataclasses import dataclass
 from enum import Enum
+from re import X
+from tkinter import Y
 
 # TODO-01 Define Error Type or Exception cbchoi
 Infinite = float("inf")  # hug value
