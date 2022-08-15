@@ -104,4 +104,9 @@ class PlayerThink(BehaviorModelExecutor):
         if self._cur_state == "THINK" and self.flag == True:
             self._cur_state = "IDLE"
         else:
-            self._cur_state = "THINK"            
+            self._cur_state = "THINK"
+
+class Player(BehaviorModelExecutor):
+    def __init__(self, instantiate_time=..., destruct_time=..., name=".", engine_name="default"):
+        self.move = PlayerMove(instantiate_time, destruct_time, name, engine_name)
+        self.think = PlayerThink(instantiate_time, destruct_time, name, engine_name)
