@@ -329,9 +329,8 @@ class SysExecutor(SysObject, BehaviorModel):
         # Agent Deletion
         self.destroy_entity()
 
-    def simulate(self, _time=Infinite):
+    def simulate(self, st, _time=Infinite):
         # Termination Condition
-        st = datetime.datetime.now()
         self.target_time = self.global_time + _time
 
         # Get minimum scheduled event
@@ -345,7 +344,7 @@ class SysExecutor(SysObject, BehaviorModel):
                     time = datetime.datetime.now()
                     end = time - st
                     print(
-                        f"engine_Running_time :{end.seconds+(end.microseconds/1000000)} s \n "
+                        f"Running_time :{end.seconds+(end.microseconds/1000000)} s "
                     )
                     break
 

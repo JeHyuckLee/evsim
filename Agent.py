@@ -120,14 +120,14 @@ class Agent(BehaviorModelExecutor):
             print("GAME END")
 
         elif self.blk_flag == True:  #벽을만났을때 리스트에 ifmove에서 설정한 방향을 추가하고, 다시 Move로 이동
-            self._cur_state == "MOVE"
+            self._cur_state = "MOVE"
             self.blk_flag = False
 
         elif self._cur_state == "SEND":  #GM에게 메세지를 보낸후 다시 IDLE 상태로 GM에게 메시지 받을때 까지 대기
             self._cur_state = "IDLE"
 
         elif not self.cm_list:
-            self._cur_state == "END"
+            self._cur_state = "END"
 
         else:  #MOVE 한 이후 SEND상태로 가서 다시 GM에게 현재위치 를 전송
             self._cur_state = "SEND"

@@ -1,109 +1,94 @@
-from re import T
+from tracemalloc import start
+from system_simulator import SystemSimulator
 from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
-from system_simulator import SystemSimulator
-from Agent import *
-from Game_manager import *
-from tkinter import *
-from tkinter import messagebox
-
-# IDLE 상태에서 대기하다가 ext_trans 에서 이벤트를 받음  이벤트를 받은후 cur_state를 변경하고 output으로 이동 output 에서 처리가 끝나면 int_trans 를 통해 다시 cur_state를 조절
-# cur_state가 다시 IDLE이 되면 이벤트를 받을때 까지 대기 , 다른 state로 바뀌면 다시 output으로 이동 해서 처리
+import datetime
 
 
-class command_list():  # 문자열을 명령어로
-    # 문자열을 해석하여 명령어 리스트를 만들어 이동시킨다.
-    def __init__(self):
-        self.cm_list = list()
+class Generator(BehaviorModelExecutor):  #오토마타 구현
 
-        self.rblk_cm = None
-        self.lblk_cm = None
-        self.fblk_cm = None
-        self.bblk_cm = None
+    def __init__(self, instance_time, destruct_time, name, engine_name):
+        BehaviorModelExecutor.__init__(self, instance_time, destruct_time,
+                                       name, engine_name)
 
-    def R(self):
-        self.cm_list.append('R')
+        self.init_state("IDLE")  #IDLE 상태
+        self.insert_state("IDLE", Infinite)  #대기 무한정 외부에서 입력을 받아야 상태가 변함
+        self.insert_state("MOVE", 1)  # MOVE상태, 1초동안 기다린후 이벤트가 없으면
+        self.msg_list = []
+        self.insert_input_port("start")  #인풋 포트
+        self.insert_output_port("process")  # 아우풋 포트
 
-    def L(self):
-        self.cm_list.append('L')
+        for i in range(1):
+            self.msg_list.append(i)
 
-    def F(self):
-        self.cm_list.append('F')
+    def ext_trans(self, port, msg):  #외부에서 이벤트가 들어올때 를 정의
+        if port == "start":  #START라는 포트에서 데이터가 들어오면 상태를 IDLE -> MOVE로 변경
+            self._cur_state = "MOVE"  #start를 받으면 1초단위로 move 라는 상태를 반복
 
-    def B(self):
-        self.cm_list.append('B')
+    def output(
+        self
+    ):  # 메세지를 보냄, 프로세스를 지정, 프로세스포트와 연결된 에이전트는 전부 메세지를 받는다. 게임을 만드는 사람은 누가 메세지를받을지 포트를 지정
+        msg = SysMessage(self.get_name(), "process")  #MOVE - 1초주기로 메세지를 보냄
+        msg.insert(self.msg_list.pop(0))  #메세지 리스트에서 하나를 뽑아서 보낸다.
+        return msg
 
-    def Blk(self, blk, cm):
-        if blk == 'R':
-            self.rblk_cm = cm
-        elif blk == 'L':
-            self.lblk_cm = cm
-        elif blk == 'F':
-            self.fblk_cm = cm
-        elif blk == 'B':
-            self.bblk_cm = cm
-
-    def get_blk(self, blk):
-        if blk == 'R':
-            return self.rblk_cm
-        elif blk == 'L':
-            return self.lblk_cm
-        elif blk == 'F':
-            return self.fblk_cm
-        elif blk == 'B':
-            return self.bblk_cm
-
-    def get_command(self):  # 만들어진 명령어 리스트를 반환한다.
-        return self.cm_list
+    def int_trans(self):
+        if self._cur_state == "MOVE" and not self.msg_list:  #MOVE 상태, 메세지가 비어있는경우 IDLE상태로 가라
+            self._cur_state = "IDLE"  #보내야할 메세지가 없으면 IDLE
+        else:  # 아니면 MOVE 상태
+            self._cur_state = "MOVE"
 
 
+class Processor(BehaviorModelExecutor):
+
+    def __init__(self, instance_time, destruct_time, name, engine_name):
+        BehaviorModelExecutor.__init__(self, instance_time, destruct_time,
+                                       name, engine_name)
+
+        self.init_state("IDLE")
+        self.insert_state("IDLE", Infinite)  #IDLE상태 대기 무한
+        self.insert_state("PROCESS", 2)  # Process 상태, 2초 대기
+
+        self.insert_input_port("process")
+
+        self.msg_list = []
+
+    def ext_trans(self, port, msg):
+        if port == "process":
+            self.cancel_rescheduling()  #리스케줄링을 취소
+            data = msg.retrieve()
+            self.msg_list.append(data[0])  #메세지를 받아서 append
+            self._cur_state = "PROCESS"  #메세지 받아서 처리
+
+    def output(self):  #지금까지 받은것을 출력
+        return None
+
+    def int_trans(self):
+        if self._cur_state == "PROCESS":
+            self._cur_state = "IDLE"
+        else:
+            self._cur_state = "IDLE"
+
+
+Start_time = datetime.datetime.now()
+print(f"Start : {Start_time}")
 # System Simulator Initialization
-
-se = SystemSimulator()
-
+se = SystemSimulator()  #백엔드 생성(메안서버 )
 se.register_engine("sname", "VIRTURE_TIME", 1)
-se.get_engine("sname").insert_input_port("nonblock")
-
-se.register_engine("sname2", "VIRTURE_TIME", 1)
-
-se.get_engine("sname2").insert_input_port("command")
-se.get_engine("sname2").insert_input_port("test")
-
-gm = Gamemanager(0, Infinite, "gm", "sname")
-se.get_engine("sname2").register_entity(gm)
-
-agent = Agent(0, Infinite, "agent", "sname", 1, 1)  #에이전트의 시작위치 지정
-se.get_engine("sname2").register_entity(agent)
-
-se.get_engine("sname2").coupling_relation(None, "command", agent, "command")
-
-se.get_engine("sname2").coupling_relation(None, "test", agent, "test")
-
-se.get_engine("sname2").coupling_relation(agent, "gm", gm, "agent")
-se.get_engine("sname2").coupling_relation(gm, "agent", agent, "gm")
-
-Move = command_list()
-
-# 명령어 파트 시작
-
-Move.Blk('F', 'R')
-Move.Blk('R', 'L')
-for i in range(10):
-    Move.F()
-
-# 끝
-
-if Move.get_blk('R') != None:
-    agent.Set_Ifmove('R', Move.get_blk('R'))
-if Move.get_blk('L') != None:
-    agent.Set_Ifmove('L', Move.get_blk('L'))
-if Move.get_blk('F') != None:
-    agent.Set_Ifmove('F', Move.get_blk('F'))
-if Move.get_blk('B') != None:
-    agent.Set_Ifmove('B', Move.get_blk('B'))
-
-#se.get_engine("sname").simulate()
-print("DD")
-se.exec_non_block_simulate(["sname", "sname2"])
-se.get_engine("sname2").insert_external_event("command", Move.get_command())
+se.get_engine("sname").insert_input_port("start")
+for i in range(1):
+    gen_name = "gen" + str(i)
+    pro_name = "pro" + str(i)
+    gen_name = Generator(0, Infinite, "Gen", "sname")
+    se.get_engine("sname").register_entity(gen_name)
+    pro_name = Processor(0, Infinite, "Proc", "sname")
+    se.get_engine("sname").register_entity(pro_name)
+    se.get_engine("sname").coupling_relation(None, "start", gen_name, "start")
+    se.get_engine("sname").coupling_relation(gen_name, "process", pro_name,
+                                             "process")
+se.get_engine("sname").insert_external_event("start", None)
+se.get_engine("sname").simulate()
+time = datetime.datetime.now()
+end = time - Start_time
+print(f"Running_time :{end.seconds}s {end.microseconds}ms")

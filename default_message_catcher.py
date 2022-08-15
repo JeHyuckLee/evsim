@@ -15,7 +15,11 @@ class DefaultMessageCatcher(BehaviorModelExecutor):
         self.insert_input_port("uncaught")
 
     def ext_trans(self, port, msg):
+        
         data = msg.retrieve()
 
+    def output(self):
+        print("dmc")
+        return 
     def time_advance(self):
         return Infinite
