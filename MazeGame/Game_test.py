@@ -3,8 +3,8 @@ from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
 from system_simulator import SystemSimulator
-from Agent import *
-from Game_manager import *
+from MazeGame.Agent import *
+from MazeGame.Game_manager import *
 from tkinter import *
 from tkinter import messagebox
 
