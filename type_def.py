@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from turtle import back
 
+
 class Direction(Enum):
     DIR_NORTH = 0
     DIR_EAST = 1
@@ -9,14 +10,10 @@ class Direction(Enum):
     DIR_SOUTH = 3
     DIR_COUNT = -1
 
-@dataclass
-class Ahead:
-    front: Direction
-    back: Direction
-    left: Direction
-    right: Direction
 
-    def set_ahead(self, ahead):
+class Ahead:
+
+    def __init__(self, ahead):
         if ahead == Direction.DIR_NORTH:
             self.front = Direction.DIR_NORTH
             self.back = Direction.DIR_SOUTH
@@ -47,7 +44,7 @@ class Ahead:
             self.set_ahead(Direction.DIR_NORTH)
         elif self.front == Direction.DIR_WEST:
             self.set_ahead(Direction.DIR_SOUTH)
-        
+
     def turn_right(self):
         if self.front == Direction.DIR_NORTH:
             self.set_ahead(Direction.DIR_EAST)
@@ -58,10 +55,12 @@ class Ahead:
         elif self.front == Direction.DIR_WEST:
             self.set_ahead(Direction.DIR_NORTH)
 
-@dataclass
+
 class Position:
-    x: int
-    y: int
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
     def get_pos(self):
         return self.x, self.y
@@ -79,9 +78,14 @@ class cell_msg():
         self.dir = direction
         self.block = block
 
+    def get_pos(self):
+        return self.pos
 
+    def get_dir(self):
+        return self.dir
 
-
+    def get_block(self):
+        return self.block
 
 maze_cell = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
              [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
