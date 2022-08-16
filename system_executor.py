@@ -187,6 +187,7 @@ class SysExecutor(SysObject, BehaviorModel):
                 #else:
                 #    destination[0].set_req_time(self.global_time)
                 destination[0].set_req_time(self.global_time)
+
                 #self.min_schedule_item.append(destination[0])
                 self.thread_flag = False
                 #self.min_schedule_item = deque(sorted(self.min_schedule_item, key=lambda bm: bm.get_req_time()))
