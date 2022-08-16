@@ -61,7 +61,7 @@ class PlayerThink(BehaviorModelExecutor):
                                        name, engine_name)
 
         self.pos = Position
-        self.ahead = Ahead(Direction.DIR_SOUTH)
+        self.ahead = Ahead
         self.input_msg = []
         self.flag = False
         self.right_flag = False
@@ -81,7 +81,9 @@ class PlayerThink(BehaviorModelExecutor):
             self._cur_state = "THINK"
 
     def output(self):
-        for msg_ahead in self.input_msg:
+        print(self.ahead)
+        print(self.ahead.get_ahead_dir("right"))
+        for msg_ahead in self.input_msg[0]:
             direction = msg_ahead.get_dir()
             block = msg_ahead.get_block()
             if self.ahead.right == direction and self.right_flag == False:

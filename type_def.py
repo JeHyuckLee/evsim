@@ -13,7 +13,23 @@ class Direction(Enum):
 
 class Ahead:
 
-    def __init__(self, ahead):
+    def __init__(self):
+        self.front = Direction.DIR_NORTH
+        self.back = Direction.DIR_SOUTH
+        self.left = Direction.DIR_WEST
+        self.right = Direction.DIR_EAST
+    
+    def get_ahead_dir(self, dir):
+        if dir == "front":
+            return self.front
+        elif dir == "back":
+            return self.back
+        elif dir == "left":
+            return self.left
+        elif dir == "right":
+            return self.right
+    
+    def set_ahead(self, ahead):
         if ahead == Direction.DIR_NORTH:
             self.front = Direction.DIR_NORTH
             self.back = Direction.DIR_SOUTH
