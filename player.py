@@ -82,7 +82,7 @@ class PlayerThink(BehaviorModelExecutor):
 
     def output(self):
         print(self.ahead)
-        print(self.ahead.get_ahead_dir("right"))
+        print(self.ahead.right)
         for msg_ahead in self.input_msg[0]:
             direction = msg_ahead.get_dir()
             block = msg_ahead.get_block()
