@@ -87,6 +87,7 @@ class CellCheck(BehaviorModelExecutor):
                          block=maze_cell[x][y - 1])
 
         self.cell_msg_list = [north, east, west, south]
+
         msg = SysMessage(self.get_name, "player")
         msg.insert(self.cell_msg_list)
 

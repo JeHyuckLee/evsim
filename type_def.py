@@ -18,7 +18,7 @@ class Ahead:
         self.back = Direction.DIR_SOUTH
         self.left = Direction.DIR_WEST
         self.right = Direction.DIR_EAST
-    
+
     def get_ahead_dir(self, dir):
         if dir == "front":
             return self.front
@@ -28,7 +28,7 @@ class Ahead:
             return self.left
         elif dir == "right":
             return self.right
-    
+
     def set_ahead(self, ahead):
         if ahead == Direction.DIR_NORTH:
             self.front = Direction.DIR_NORTH
@@ -71,6 +71,9 @@ class Ahead:
         elif self.front == Direction.DIR_WEST:
             self.set_ahead(Direction.DIR_NORTH)
 
+    def get_right(self):
+        return self.right
+
 
 class Position:
 
@@ -102,6 +105,7 @@ class cell_msg():
 
     def get_block(self):
         return self.block
+
 
 maze_cell = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
              [1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],

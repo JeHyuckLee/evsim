@@ -41,7 +41,7 @@ class PlayerMove(BehaviorModelExecutor):
         if self._cur_state == "MOVE":
             self._cur_state = "IDLE"
         else:
-            self._cur_state = "IDLE"
+            self._cur_state = "MOVE"
 
     def move_player(self, dir):
         if dir == Direction.DIR_NORTH:
@@ -60,8 +60,8 @@ class PlayerThink(BehaviorModelExecutor):
         BehaviorModelExecutor.__init__(self, instance_time, destruct_time,
                                        name, engine_name)
 
-        self.pos = Position
-        self.ahead = Ahead
+        # self.pos = Position(0, 0)
+        self.ahead = Ahead()
         self.input_msg = []
         self.flag = False
         self.right_flag = False
@@ -81,12 +81,13 @@ class PlayerThink(BehaviorModelExecutor):
             self._cur_state = "THINK"
 
     def output(self):
-        print(self.ahead)
-        print(self.ahead.right)
+        # print(self.ahead)
+        # print(self.ahead.right)
         for msg_ahead in self.input_msg[0]:
             direction = msg_ahead.get_dir()
             block = msg_ahead.get_block()
-            if self.ahead.right == direction and self.right_flag == False:
+            if self.ahead.get_right(
+            ) == direction and self.right_flag == False:
                 if block == 0:
                     self.ahead.turn_right()
                     msg = SysMessage(self.get_name(), "move")
@@ -104,10 +105,10 @@ class PlayerThink(BehaviorModelExecutor):
                         return msg
                     elif block == 1:
                         self.ahead.turn_left()
-        return None
+        return msg
 
     def int_trans(self):
         if self._cur_state == "THINK" and self.flag == True:
             self._cur_state = "IDLE"
         else:
-            self._cur_state = "IDLE"
+            self._cur_state = "THINK"
