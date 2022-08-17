@@ -3,6 +3,7 @@ from abc import abstractmethod
 from behavior_model import BehaviorModel
 from definition import *
 
+
 class BehaviorModelExecutor(SysObject, BehaviorModel):
     def __init__(self, instantiate_time=Infinite, destruct_time=Infinite, name=".", engine_name="default"):
         SysObject.__init__(self)
@@ -11,7 +12,7 @@ class BehaviorModelExecutor(SysObject, BehaviorModel):
         self._instance_t = instantiate_time
         self._destruct_t = destruct_time
         self._next_event_t = 0
-        self._cur_state = "" 
+        self._cur_state = ""
         # self._state_lst = []
         #self._time_map = {}
         # self._in_port_lst = []
@@ -63,8 +64,8 @@ class BehaviorModelExecutor(SysObject, BehaviorModel):
         pass
 
     # Time Advanced Function
-    def time_advance(self):       
-        if self._cur_state in self._states:    
+    def time_advance(self):
+        if self._cur_state in self._states:
             return self._states[self._cur_state]
         else:
             return -1
@@ -75,11 +76,12 @@ class BehaviorModelExecutor(SysObject, BehaviorModel):
             self.RequestedTime = Infinite
         else:
             if self._cancel_reschedule_f:
-                self.RequestedTime = min(self._next_event_t, global_time + self.time_advance())
+                self.RequestedTime = min(
+                    self._next_event_t, global_time + self.time_advance())
             else:
                 self.RequestedTime = global_time + self.time_advance()
 
-    def get_req_time(self):    
+    def get_req_time(self):
         if self._cancel_reschedule_f:
             self._cancel_reschedule_f = False
         self._next_event_t = self.RequestedTime

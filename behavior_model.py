@@ -1,7 +1,9 @@
 from collections import OrderedDict
 from definition import CoreModel, ModelType
 
+
 class BehaviorModel(CoreModel):
+
     def __init__(self, _name=""):
         super(BehaviorModel, self).__init__(_name, ModelType.BEHAVIORAL)
         self._states = {}
@@ -23,6 +25,9 @@ class BehaviorModel(CoreModel):
         # Duplicated State
         self._states[name] = float(deadline)
 
+
+#포팅안해도됨
+
     def retrieve_states(self):
         return self._states
 
@@ -32,9 +37,11 @@ class BehaviorModel(CoreModel):
     def insert_external_transition(self, pre_state, event, post_state):
         self.external_transition_map_tuple[(pre_state, event)] = post_state
         if pre_state in self.external_transition_map_state:
-            self.external_transition_map_state[pre_state].append(event, post_state)
+            self.external_transition_map_state[pre_state].append(
+                event, post_state)
         else:
-            self.external_transition_map_state[pre_state] = [(event, post_state)]
+            self.external_transition_map_state[pre_state] = [(event,
+                                                              post_state)]
 
     def retrieve_external_transition(self, pre_state):
         return self.external_transition_map_state[pre_state]
@@ -48,9 +55,11 @@ class BehaviorModel(CoreModel):
     def insert_internal_transition(self, pre_state, event, post_state):
         self.internal_transition_map_tuple[(pre_state, event)] = post_state
         if pre_state in self.internal_transition_map_state:
-            self.internal_transition_map_state[pre_state].append(event, post_state)
+            self.internal_transition_map_state[pre_state].append(
+                event, post_state)
         else:
-            self.internal_transition_map_state[pre_state] = [(event, post_state)]
+            self.internal_transition_map_state[pre_state] = [(event,
+                                                              post_state)]
 
     def retrieve_internal_transition(self, pre_state):
         return self.internal_transition_map_state[pre_state]

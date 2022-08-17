@@ -1,7 +1,7 @@
 from system_executor import SysExecutor
 from definition import SingletonType
 from threading import Thread
-import dill
+
 
 class SystemSimulator(object):
     __metaclass__ = SingletonType
@@ -9,7 +9,8 @@ class SystemSimulator(object):
 
     @staticmethod
     def register_engine(sim_name, sim_mode='VIRTUAL_TIME', time_step=1):
-        SystemSimulator._engine[sim_name] = SysExecutor(time_step, sim_name, sim_mode)
+        SystemSimulator._engine[sim_name] = SysExecutor(
+            time_step, sim_name, sim_mode)
 
     @staticmethod
     def get_engine_map():
@@ -44,7 +45,7 @@ class SystemSimulator(object):
             SystemSimulator._engine[sim_instance.get_name()] = sim_instance
             sim_instance.simulate()
         pass
-    
+
     @staticmethod
     def exec_non_block_simulate(sim_list):
         for sim_name in sim_list:

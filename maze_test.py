@@ -2,7 +2,7 @@ from system_simulator import SystemSimulator
 from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
-from cell import *
+from maze_cell import *
 from player import *
 from type_def import *
 import datetime

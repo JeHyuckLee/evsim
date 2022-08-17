@@ -187,7 +187,6 @@ class SysExecutor(SysObject, BehaviorModel):
                 #else:
                 #    destination[0].set_req_time(self.global_time)
                 destination[0].set_req_time(self.global_time)
-
                 #self.min_schedule_item.append(destination[0])
                 self.thread_flag = False
                 #self.min_schedule_item = deque(sorted(self.min_schedule_item, key=lambda bm: bm.get_req_time()))
@@ -300,7 +299,6 @@ class SysExecutor(SysObject, BehaviorModel):
         while math.isclose(tuple_obj.get_req_time(),
                            self.global_time,
                            rel_tol=1e-9):
-            print("obj : ", tuple_obj)
             msg = tuple_obj.output()
             if msg is not None:
                 self.output_handling(tuple_obj, (self.global_time, msg))
@@ -331,9 +329,8 @@ class SysExecutor(SysObject, BehaviorModel):
         # Agent Deletion
         self.destroy_entity()
 
-    def simulate(self, _time=Infinite):
+    def simulate(self, st, _time=Infinite):
         # Termination Condition
-        st = datetime.datetime.now()
         self.target_time = self.global_time + _time
 
         # Get minimum scheduled event
@@ -347,7 +344,7 @@ class SysExecutor(SysObject, BehaviorModel):
                     time = datetime.datetime.now()
                     end = time - st
                     print(
-                        f"engine_Running_time :{end.seconds+(end.microseconds/1000000)} s \n "
+                        f"Running_time :{end.seconds+(end.microseconds/1000000)} s "
                     )
                     break
 
