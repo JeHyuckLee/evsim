@@ -96,6 +96,7 @@ class PlayerThink(BehaviorModelExecutor):
                     return msg
                 elif block == 1:
                     self.right_flag = True
+                    self.flag = False
             elif self.right_flag == True:
                 if direction == self.ahead.front:
                     if block == 0:
@@ -105,7 +106,8 @@ class PlayerThink(BehaviorModelExecutor):
                         return msg
                     elif block == 1:
                         self.ahead.turn_left()
-        return msg
+                        self.flag = False
+        return None
 
     def int_trans(self):
         if self._cur_state == "THINK" and self.flag == True:
