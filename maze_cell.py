@@ -89,7 +89,7 @@ class CellCheck(BehaviorModelExecutor):
         self.cell_msg_list = [north, east, west, south]
 
         msg = SysMessage(self.get_name, "player")
-        msg.insert(cell_msg)
+        msg.insert(self.cell_msg_list)
 
         return msg
 

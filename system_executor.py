@@ -300,6 +300,7 @@ class SysExecutor(SysObject, BehaviorModel):
         while math.isclose(tuple_obj.get_req_time(),
                            self.global_time,
                            rel_tol=1e-9):
+            print("obj : ", tuple_obj)
             msg = tuple_obj.output()
             if msg is not None:
                 self.output_handling(tuple_obj, (self.global_time, msg))
