@@ -89,6 +89,7 @@ class PlayerThink(BehaviorModelExecutor):
             if self.ahead.get_right(
             ) == direction and self.right_flag == False:
                 if block == 0:
+                    print("Turn Right.")
                     self.ahead.turn_right()
                     msg = SysMessage(self.get_name(), "move")
                     msg.insert(self.ahead)
@@ -105,6 +106,7 @@ class PlayerThink(BehaviorModelExecutor):
                         self.flag = True
                         return msg
                     elif block == 1:
+                        print("Turn Left.")
                         self.ahead.turn_left()
                         self.flag = False
         return None
