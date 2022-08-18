@@ -4,9 +4,9 @@ from behavior_model_executor import BehaviorModelExecutor
 from system_message import SysMessage
 from definition import *
 from system_simulator import SystemSimulator
-
 from type_def import *
-
+import copy
+import csv
 
 class CellIn(BehaviorModelExecutor):
 
@@ -53,6 +53,7 @@ class CellCheck(BehaviorModelExecutor):
         self.insert_state("CHECK", 1)
         self.insert_state("IDLE", Infinite)
         self.init_state("IDLE")
+        self.maze_log = copy.deepcopy(maze_cell)
         self.pos = Position(0, 0)
         self.insert_input_port("check")
         self.insert_output_port("player")
@@ -68,7 +69,11 @@ class CellCheck(BehaviorModelExecutor):
 
     def output(self):
         x, y = self.pos.get_pos()
+        self.maze_log[y][x] = -1
         if maze_cell[y][x] == 3: 
+            with open("log.csv", 'w') as file:
+                writer = csv.writer(file)
+                writer.writerows(self.maze_log)
             print("Arrive Destination!!!")
             return None
         north = cell_msg(direction=Direction.DIR_NORTH,
