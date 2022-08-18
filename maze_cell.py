@@ -32,9 +32,7 @@ class CellIn(BehaviorModelExecutor):
             self._cur_state = "IN"
 
     def output(self):
-        print("output")
         msg = SysMessage(self.get_name, "check")
-        print(f"CellIn pos: {self.pos.get_pos()}")
         msg.insert(self.pos)
 
         return msg
@@ -69,7 +67,6 @@ class CellCheck(BehaviorModelExecutor):
             self._cur_state = "CHECK"
 
     def output(self):
-        print(f"Check pos: {self.pos.get_pos()}")
         x, y = self.pos.get_pos()
         if maze_cell[y][x] == 3: 
             print("Arrive Destination!!!")

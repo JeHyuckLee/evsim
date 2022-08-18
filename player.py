@@ -35,7 +35,6 @@ class PlayerMove(BehaviorModelExecutor):
     def output(self):
         print(f"Current Position: ({self.pos.x}, {self.pos.y})")
         msg = SysMessage(self.get_name(), "in")
-        print(f"Player pos: {self.pos.get_pos()}")
         msg.insert(self.pos)
         return msg
 
