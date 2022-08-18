@@ -34,6 +34,7 @@ class CellIn(BehaviorModelExecutor):
     def output(self):
         print("output")
         msg = SysMessage(self.get_name, "check")
+        print(f"CellIn pos: {self.pos.get_pos()}")
         msg.insert(self.pos)
 
         return msg
@@ -68,23 +69,27 @@ class CellCheck(BehaviorModelExecutor):
             self._cur_state = "CHECK"
 
     def output(self):
+        print(f"Check pos: {self.pos.get_pos()}")
         x, y = self.pos.get_pos()
+        if maze_cell[y][x] == 3: 
+            print("Arrive Destination!!!")
+            return None
         north = cell_msg(direction=Direction.DIR_NORTH,
                          x=x,
-                         y=y + 1,
-                         block=maze_cell[x][y + 1])
+                         y=y - 1,
+                         block=maze_cell[y-1][x])
         east = cell_msg(direction=Direction.DIR_EAST,
                         x=x + 1,
                         y=y,
-                        block=maze_cell[x + 1][y])
+                        block=maze_cell[y][x+1])
         west = cell_msg(direction=Direction.DIR_WEST,
                         x=x - 1,
                         y=y,
-                        block=maze_cell[x - 1][y])
+                        block=maze_cell[y][x-1])
         south = cell_msg(direction=Direction.DIR_SOUTH,
                          x=x,
-                         y=y - 1,
-                         block=maze_cell[x][y - 1])
+                         y=y + 1,
+                         block=maze_cell[y+1][x])
 
         self.cell_msg_list = [north, east, west, south]
 

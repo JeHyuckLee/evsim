@@ -28,12 +28,14 @@ class PlayerMove(BehaviorModelExecutor):
             self.cancel_rescheduling()
             data = msg.retrieve()
             self.ahead = data[0]
+            print(f"Player Move: {self.ahead.front}")
             self.move_player(self.ahead.front)
             self._cur_state = "MOVE"
 
     def output(self):
         print(f"Current Position: ({self.pos.x}, {self.pos.y})")
         msg = SysMessage(self.get_name(), "in")
+        print(f"Player pos: {self.pos.get_pos()}")
         msg.insert(self.pos)
         return msg
 
@@ -75,6 +77,7 @@ class PlayerThink(BehaviorModelExecutor):
 
     def ext_trans(self, port, msg):
         if port == "player":
+            self.right_flag = False
             self.cancel_rescheduling()
             data = msg.retrieve()
             self.input_msg.append(data[0])
@@ -88,20 +91,24 @@ class PlayerThink(BehaviorModelExecutor):
             block = msg_ahead.get_block()
             if self.ahead.get_right(
             ) == direction and self.right_flag == False:
-                if block == 0:
+                if block == 0 or block == 3:
                     print("Turn Right.")
                     self.ahead.turn_right()
                     msg = SysMessage(self.get_name(), "move")
                     msg.insert(self.ahead)
+                    self.input_msg.pop(0)
                     self.flag = True
                     return msg
                 elif block == 1:
+                    print("Block Right.")
                     self.right_flag = True
                     self.flag = False
             elif self.right_flag == True:
                 if direction == self.ahead.front:
-                    if block == 0:
+                    if block == 0 or block == 3:
+                        print("Move Front.")
                         msg = SysMessage(self.get_name(), "move")
+                        self.input_msg.pop(0)
                         msg.insert(self.ahead)
                         self.flag = True
                         return msg
